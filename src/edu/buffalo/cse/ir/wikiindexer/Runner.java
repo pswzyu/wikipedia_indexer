@@ -103,8 +103,13 @@ public class Runner {
 		
 		
 		
-		
 		//TODO: More code to be added here!
+		/* TODO: pswzyu：上边queue是已经从文件读取并从xml中解析出来的词条内容，
+		 * 接下来应该使用多线程的方式启动几个DocumentTransformer来进行index工作
+		 * 新建一个indexaleDocument对象的集合， 用来放传回来的结果
+		 * 
+		 * 最后使用indexableDocument生成index文件
+		 */
 		
 	}
 
