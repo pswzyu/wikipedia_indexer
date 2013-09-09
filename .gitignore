@@ -9,3 +9,4 @@
 *.swp
 .project
 .classpath
+.settings
