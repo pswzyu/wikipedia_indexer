@@ -24,6 +24,9 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 	 */
 	public DocumentTransformer(Map<INDEXFIELD, Tokenizer> tknizerMap, WikipediaDocument doc) {
 		//TODO: Implement this method
+		/* TODO: pswzyu:tknizerMap 是一个hashmap， 针对每一个文章field使用不同的
+		 * tokenizer
+		 */
 	}
 	
 	/**
@@ -32,6 +35,9 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 	 */
 	public IndexableDocument call() throws TokenizerException {
 		// TODO Implement this method
+		/* TODO： 对每一个wikipidiaDocument的field调用对应的tokenizer
+		 * 需要先将field的内容放到一个tokenizerstream中， 然后调用tokenizer的tokenize方法
+		 */
 		return null;
 	}
 	

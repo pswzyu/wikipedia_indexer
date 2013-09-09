@@ -32,6 +32,12 @@ public class Parser {
 	 * @param docs
 	 */
 	public void parse(String filename, Collection<WikipediaDocument> docs) {
+		/* TODO: pswzyu: 这里需要读取文件内容，然后解析xml， 将每一个page标签中的内容
+		 * 实例化为一个WikipediaDocument对象，
+		 * 然后还要使用wikipeidaParser对WikipediaDocument继续解析
+		 * 然后调用下面的add方法添加到docs中，
+		 * 这里实际上没有必要使用下面那个add， 因为这里不是多线程的
+		 */
 		
 	}
 	
