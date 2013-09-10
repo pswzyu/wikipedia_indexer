@@ -111,6 +111,14 @@ public class Runner {
 		 * 最后使用indexableDocument生成index文件
 		 */
 		
+		/**************
+		 * pswzyu添加用来测试的
+		 */
+		
+		/**************
+		 * 
+		 */
+		
 	}
 
 	/**

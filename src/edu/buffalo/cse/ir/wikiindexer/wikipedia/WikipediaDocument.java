@@ -72,6 +72,16 @@ public class WikipediaDocument {
 	}
 	
 	/**
+	 * pswzyu 添加， 传入初始化的text， 命名section title为 Default
+	 * Method to add a section to the given document
+	 * @param text: The parsed text of the section
+	 */
+	public void addInitialSection(String text)
+	{
+		addSection("Default", text);
+	}
+	
+	/**
 	 * Method to add a section to the given document
 	 * @param title: The parsed title of the section
 	 * @param text: The parsed text of the section
