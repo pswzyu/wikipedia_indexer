@@ -76,9 +76,9 @@ public class WikipediaDocument {
 	 * Method to add a section to the given document
 	 * @param text: The parsed text of the section
 	 */
-	public void addInitialSection(String text)
+	public void publicAddSection(String title, String text)
 	{
-		addSection("Default", text);
+		sections.add(new Section(title, text));
 	}
 	
 	/**
@@ -88,6 +88,14 @@ public class WikipediaDocument {
 	 */
 	protected void addSection(String title, String text) {
 		sections.add(new Section(title, text));
+	}
+	
+	/**
+	 * pswzyu:public Method to add a link to the set of links referenced by this document
+	 * @param link: The page name for the link
+	 */
+	public void publicAddLink(String link) {
+		links.add(link);
 	}
 	
 	/**

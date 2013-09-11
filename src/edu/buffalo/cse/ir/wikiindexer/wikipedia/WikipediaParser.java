@@ -2,6 +2,13 @@
  * 
  */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
+import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument.Section;
 
 /**
  * @author nikhillo
@@ -11,6 +18,44 @@ package edu.buffalo.cse.ir.wikiindexer.wikipedia;
  * All methods are static as the class is not expected to maintain any state.
  */
 public class WikipediaParser {
+	
+	/*
+	 * 构造方法， 传入解析了一半的的WikipediaDocument， 还有词条的实际文本，
+	 * 使用下面的静态方法对实际文本进行处理，然后将文本添加到队列中
+	 * @param wikidoc: wikipediaDocument object that has been parsed from the xml file
+	 * @param wikitext: String object of the explaining text(should be parse by the static
+	 * 	functions and add to wikidoc through addSection method)
+	 * @param parser: Parser object, I need this reference to call the add method!
+	 * @param docsqueue: add to this queue. silly framework!
+	 */
+	
+//	public WikipediaParser(WikipediaDocument wikidoc, String wikitext, Parser parser,
+//	
+//			ConcurrentLinkedQueue<WikipediaDocument> docsqueue)
+//	{
+//		wikitext = parseSectionTitle(wikitext);
+//		wikitext = parseListItem(wikitext);
+//		wikitext = parseTextFormatting(wikitext);
+//		wikitext = parseTagFormatting(wikitext);
+//		wikitext = parseTemplates(wikitext);
+//		String[] links = parseLinks(wikitext);
+//		for (int step = 0; step != links.length; ++step)
+//		{
+//			wikidoc.addLink(links[step]);
+//		}
+//		parser.add(wikidoc, docsqueue);
+//	}
+	/*
+	 * 用来分割section， 注意：由于junit测试要检验下面的parseSectionTitle， 所以这里必须
+	 * 将section分好， 比如分成 "==SB== hahacontent" 然后“==SB==”这个部分用parseSectionTitle
+	 * 去掉等号， 然后添加到linkedlist返回
+	 * 如果文章没有section， 则返回一个title为Default的section
+	 */
+	public static HashMap<String, String> splitSection(String text)
+	{
+		return null;
+	}
+	
 	/* TODO */
 	/**
 	 * Method to parse section titles or headings.

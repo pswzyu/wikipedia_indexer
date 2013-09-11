@@ -4,6 +4,7 @@
 package edu.buffalo.cse.ir.wikiindexer.parsers;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Properties;
@@ -22,6 +23,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaParser;
 
 /**
  * @author nikhillo
@@ -61,7 +63,7 @@ public class Parser {
 	        SAXParserFactory spfac = SAXParserFactory.newInstance();
 	        //Now use the parser factory to create a SAXParser object
 	        sp = spfac.newSAXParser();
-	        handler = new Inn_MyHandler(docs);
+	        handler = new Inn_MyHandler(docs, this);
 	        sp.parse(filename, handler);
 		}
 		catch(ParserConfigurationException | SAXException | IOException e)
@@ -90,9 +92,12 @@ public class Parser {
 		LinkedList<String> element_stack;
 		
 		ConcurrentLinkedQueue<WikipediaDocument> queue;
-		public Inn_MyHandler(Collection<WikipediaDocument> docs)
+		Parser parser;
+		
+		public Inn_MyHandler(Collection<WikipediaDocument> docs, Parser p_parser)
 		{
 			queue = (ConcurrentLinkedQueue<WikipediaDocument>) docs;
+			parser = p_parser;
 			element_stack = new LinkedList<String>();
 		}
 		
@@ -166,7 +171,28 @@ public class Parser {
 				{
 					WikipediaDocument temp_d = new WikipediaDocument(idFromXml, timestampFromXml,
 							authorFromXml, ttl);
-					temp_d.addInitialSection(text);
+					//new WikipediaParser(temp_d, text, parser, queue);
+					text = WikipediaParser.parseListItem(text);
+					text = WikipediaParser.parseTextFormatting(text);
+					text = WikipediaParser.parseTagFormatting(text);
+					text = WikipediaParser.parseTemplates(text);
+					
+					// TODO:link这TA还没搞清楚 
+					String[] links = WikipediaParser.parseLinks(text);
+					for (int step = 0; step != links.length; ++step)
+					{
+						temp_d.publicAddLink(links[step]);
+					}
+					
+					HashMap<String, String> sections = WikipediaParser.splitSection(text);
+					Iterator iter = sections.keySet().iterator();
+					while (iter.hasNext()) {
+					    String key = (String)iter.next();
+					    String val = (String)sections.get(key);
+					    temp_d.publicAddSection(key, val);
+					}
+					
+					
 					queue.add(temp_d);
 				}catch(ParseException e)
 				{
