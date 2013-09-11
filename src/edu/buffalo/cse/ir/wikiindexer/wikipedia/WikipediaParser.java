@@ -18,6 +18,10 @@ public class WikipediaParser {
 	 * @param titleStr: The string to be parsed
 	 * @return The parsed string with the markup removed
 	 */
+	/*
+	 * @author xcv58
+	 * How and where split section? 
+	 */
 	public static String parseSectionTitle(String titleStr) {
 		return null;
 	}
@@ -29,8 +33,13 @@ public class WikipediaParser {
 	 * @param itemText: The string to be parsed
 	 * @return The parsed string with markup removed
 	 */
+	/**
+	 * @author xcv58
+	 * I cannot find the usage case of definition lists! 
+	 */
 	public static String parseListItem(String itemText) {
-		return null;
+		itemText = itemText.replaceAll("[//*//#]{1,3}","");
+		return itemText;
 	}
 	
 	/* TODO */
@@ -41,6 +50,7 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed
 	 */
 	public static String parseTextFormatting(String text) {
+		text = text.replaceAll("('''''|'''|'')(.+?)\\1", "$2");
 		return null;
 	}
 	
@@ -52,7 +62,10 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed.
 	 */
 	public static String parseTagFormatting(String text) {
-		return null;
+		//The commented code is less efficient. But much more precise. The second line can only remove all tags.
+//		text = text.replaceAll("(?s)<(.*?)(.*?)>(.*?)</\\1>","$3");
+		text = text.replaceAll("<[^<>]*>","");
+		return text;
 	}
 	
 	/* TODO */
@@ -62,8 +75,13 @@ public class WikipediaParser {
 	 * @param text: The text to be parsed
 	 * @return The parsed text with the markup removed
 	 */
+	/*
+	 * @author xcv58
+	 * Should retain text within tag?
+	 */
 	public static String parseTemplates(String text) {
-		return null;
+		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","$1");
+		return text;
 	}
 	
 	
@@ -75,6 +93,14 @@ public class WikipediaParser {
 	 * @return An array containing two elements as follows - 
 	 *  The 0th element is the parsed text as visible to the user on the page
 	 *  The 1st element is the link url
+	 */
+	/**
+	 * @author xcv58
+	 * Wait for content from WikepediaDocument.
+	 * What string exactly this method can got? 
+	 * 	I think it should be string that only have one url. And this require pre-process.
+	 * And where to store the result Sting[]?
+	 * @return
 	 */
 	public static String[] parseLinks(String text) {
 		return null;
