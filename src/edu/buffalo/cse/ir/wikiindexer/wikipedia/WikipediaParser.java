@@ -7,6 +7,7 @@ import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.*;
 
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument.Section;
 
@@ -51,9 +52,30 @@ public class WikipediaParser {
 	 * 去掉等号， 然后添加到linkedlist返回
 	 * 如果文章没有section， 则返回一个title为Default的section
 	 */
+	/*
+	 * All requirement done.
+	 * 传入的text需要预先处理好其他的Markup标记；
+	 * 但最终每个Section的部分还是需要去除一下Section标记，因为subsection的存在。
+	 */
 	public static HashMap<String, String> splitSection(String text)
 	{
-		return null;
+		HashMap<String, String> tmpMap = new HashMap<String, String>();
+		Matcher m = Pattern.compile("(^|\\n)==[^=]+?==").matcher(text);
+		int tmpAnchor = 0;
+		String tmp = "";
+		while(m.find())
+		{
+			if(!tmp.equals(""))
+			{
+//				System.out.println("|||" + tmp + "|||" + "XXX"+ text.substring(tmpAnchor, m.start()) + "XXX");
+				tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor, m.start()));
+			}
+			tmp = m.group();
+			tmpAnchor = m.end();
+		}
+//		System.out.println(tmp + "|||" + text.substring(tmpAnchor));
+		tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
+		return tmpMap;
 	}
 	
 	/* TODO */
@@ -68,7 +90,8 @@ public class WikipediaParser {
 	 * How and where split section? 
 	 */
 	public static String parseSectionTitle(String titleStr) {
-		return null;
+		titleStr = titleStr.replaceAll("(^|(?<=\n))(={1,6})([^=]+?)\\2", "$3");
+		return titleStr;
 	}
 	
 	/* TODO */
@@ -95,7 +118,7 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed
 	 */
 	public static String parseTextFormatting(String text) {
-		text = text.replaceAll("('''''|'''|'')(.+?)\\1", "$2");
+		text = text.replaceAll("('''''|'''|'')([^']+?)\\1", "$2");
 		return null;
 	}
 	
@@ -126,6 +149,7 @@ public class WikipediaParser {
 	 */
 	public static String parseTemplates(String text) {
 		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","$1");
+//		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","");
 		return text;
 	}
 	
