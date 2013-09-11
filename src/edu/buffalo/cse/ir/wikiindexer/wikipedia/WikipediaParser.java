@@ -73,8 +73,16 @@ public class WikipediaParser {
 			tmp = m.group();
 			tmpAnchor = m.end();
 		}
+		
 //		System.out.println(tmp + "|||" + text.substring(tmpAnchor));
-		tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
+		if(!tmp.equals(""))
+		{
+			tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
+		}
+		else
+		{
+			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
+		}
 		return tmpMap;
 	}
 	
