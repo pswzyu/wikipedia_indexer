@@ -127,7 +127,7 @@ public class WikipediaParser {
 	 */
 	public static String parseTextFormatting(String text) {
 		text = text.replaceAll("('''''|'''|'')([^']+?)\\1", "$2");
-		return null;
+		return text;
 	}
 	
 	/* TODO */

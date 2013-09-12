@@ -38,7 +38,7 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		/* TODO： 对每一个wikipidiaDocument的field调用对应的tokenizer
 		 * 需要先将field的内容放到一个tokenizerstream中， 然后调用tokenizer的tokenize方法
 		 */
-		return null;
+		return new IndexableDocument();
 	}
 	
 }

@@ -6,10 +6,17 @@ package edu.buffalo.cse.ir.wikiindexer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Callable;     
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;     
+import java.util.concurrent.Executors;     
+import java.util.concurrent.Future;
 
 import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
@@ -21,6 +28,7 @@ import edu.buffalo.cse.ir.wikiindexer.test.AllTests;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.Tokenizer;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerFactory;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.DocumentTransformer;
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.IndexableDocument;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 
 /**
@@ -30,6 +38,8 @@ import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
  */
 public class Runner {
 
+	// 控制同步transform的线程数量
+	final static int THREAD_CONCURRENT = 1;
 	/**
 	 * @param args
 	 */
@@ -110,6 +120,34 @@ public class Runner {
 		 * 
 		 * 最后使用indexableDocument生成index文件
 		 */
+		Iterator<WikipediaDocument> queue_iter = queue.iterator();
+		// 好神奇的callable线程管理方法！！
+		// 新建一个future数组， 用来存放每个线程返回的indexabledocument
+		ArrayList<Future> future_array = new ArrayList<Future>(queue.size());
+		// 新建线程池
+		ExecutorService es = Executors.newFixedThreadPool(THREAD_CONCURRENT);
+		while (queue_iter.hasNext())
+		{
+			future_array.add(es.submit(
+					new DocumentTransformer(ifmap, queue_iter.next()) ));
+		}
+		
+		// 使用future.get()获取indexabledocument对象
+		ArrayList<IndexableDocument> idxable_doc =
+				new ArrayList<IndexableDocument>(queue.size());
+		
+		for (Iterator<Future> iter = future_array.iterator();
+				iter.hasNext(); )
+		{
+			try {
+				idxable_doc.add( (IndexableDocument)(iter.next().get()) );
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+		es.shutdownNow();
 		
 		/**************
 		 * pswzyu添加用来测试的
