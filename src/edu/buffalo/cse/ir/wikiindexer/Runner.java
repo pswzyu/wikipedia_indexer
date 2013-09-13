@@ -122,6 +122,7 @@ public class Runner {
 		 */
 		Iterator<WikipediaDocument> queue_iter = queue.iterator();
 		// 好神奇的callable线程管理方法！！
+		// http://aloys.iteye.com/blog/630135
 		// 新建一个future数组， 用来存放每个线程返回的indexabledocument
 		ArrayList<Future> future_array = new ArrayList<Future>(queue.size());
 		// 新建线程池

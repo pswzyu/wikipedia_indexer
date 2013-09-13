@@ -3,12 +3,17 @@
  */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.Tokenizer;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
+import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument.Section;
 
 /**
  * A Callable document transformer that converts the given WikipediaDocument object
@@ -17,6 +22,13 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
  *
  */
 public class DocumentTransformer implements Callable<IndexableDocument> {
+	
+	/*
+	 * 添加变量， 保存初始化的时候传进来的参数
+	 */
+	HashMap<INDEXFIELD, Tokenizer> tz_map;
+	WikipediaDocument target_doc;
+	
 	/**
 	 * Default constructor, DO NOT change
 	 * @param tknizerMap: A map mapping a fully initialized tokenizer to a given field type
@@ -27,6 +39,8 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		/* TODO: pswzyu:tknizerMap 是一个hashmap， 针对每一个文章field使用不同的
 		 * tokenizer
 		 */
+		tz_map = (HashMap<INDEXFIELD, Tokenizer>) tknizerMap;
+		target_doc = doc;
 	}
 	
 	/**
@@ -38,6 +52,28 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		/* TODO： 对每一个wikipidiaDocument的field调用对应的tokenizer
 		 * 需要先将field的内容放到一个tokenizerstream中， 然后调用tokenizer的tokenize方法
 		 */
+		// term, 就是将文章内容取出来
+		List<Section> sections = target_doc.getSections();
+		Iterator<Section> sections_iter = sections.iterator();
+		String sections_string = "";
+		while (sections_iter.hasNext())
+		{
+			Section tmp_sec = sections_iter.next();
+			if (tmp_sec.getTitle().equals("Default"))
+			{
+				// 标题要是default的话就不将标题添加
+			}else
+			{
+				// 在标题两边添加.避免在分句的时候混淆
+				sections_string += "." + tmp_sec.getTitle() + ".";
+			}
+			sections_string += tmp_sec.getText();
+		}
+		TokenStream ts_term = new TokenStream(sections_string);
+		// author
+		// category
+		//LINK
+		
 		return new IndexableDocument();
 	}
 	
