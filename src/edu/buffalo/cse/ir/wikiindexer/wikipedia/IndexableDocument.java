@@ -3,6 +3,8 @@
  */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 
+import java.util.HashMap;
+
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 
@@ -12,11 +14,15 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
  *
  */
 public class IndexableDocument {
+	
+	HashMap<INDEXFIELD, TokenStream> ts_pool;
+	
 	/**
 	 * Default constructor
 	 */
 	public IndexableDocument() {
 		//TODO: Init state as needed
+		ts_pool = new HashMap<INDEXFIELD, TokenStream>();
 	}
 	
 	/**
@@ -27,6 +33,7 @@ public class IndexableDocument {
 	 */
 	public void addField(INDEXFIELD field, TokenStream stream) {
 		//TODO: Implement this method
+		ts_pool.put(field, stream);
 	}
 	
 	/**
@@ -36,7 +43,7 @@ public class IndexableDocument {
 	 */
 	public TokenStream getStream(INDEXFIELD key) {
 		//TODO: Implement this method
-		return null;
+		return ts_pool.get(key);
 	}
 	
 }

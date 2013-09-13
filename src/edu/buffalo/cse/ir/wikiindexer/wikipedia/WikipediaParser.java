@@ -60,6 +60,8 @@ public class WikipediaParser {
 	public static HashMap<String, String> splitSection(String text)
 	{
 		HashMap<String, String> tmpMap = new HashMap<String, String>();
+		// TODO：pswzyu 不用考虑sebsection， 直接把有==A==， 或===A===， 或
+		// 。。。的地方标记， 然后划分开就可以
 		Matcher m = Pattern.compile("(^|\\n)==[^=]+?==").matcher(text);
 		int tmpAnchor = 0;
 		String tmp = "";
@@ -178,6 +180,15 @@ public class WikipediaParser {
 	 * 	I think it should be string that only have one url. And this require pre-process.
 	 * And where to store the result Sting[]?
 	 * @return
+	 */
+	/*
+	 * pswzyu: 我觉得link应该这样实现：首先去掉所有的htmllink， 这些不用做index
+	 * 
+	 * A forward index that maps the different Wikipedia pages referenced by	
+ 	 * a given page
+ 	 * 
+ 	 * 然后对于像[[Other Page Title|Name show on this page]]这样的链接需要将后边的
+ 	 * Name show on this page保存在当前的章节中， 将Other Page Title放到link列表中
 	 */
 	public static String[] parseLinks(String text) {
 		return null;

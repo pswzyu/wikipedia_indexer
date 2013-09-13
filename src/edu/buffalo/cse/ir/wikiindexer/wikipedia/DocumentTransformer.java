@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
@@ -71,10 +72,40 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		}
 		TokenStream ts_term = new TokenStream(sections_string);
 		// author
+		TokenStream ts_author = new TokenStream(target_doc.getAuthor());
 		// category
+		List<String> catagories = target_doc.getCategories();
+		Iterator<String> catagories_iter = catagories.iterator();
+		String catagories_string = "";
+		while (catagories_iter.hasNext())
+		{
+			catagories_string += catagories_iter.next() + ".";
+		}
+		TokenStream ts_catagory = new TokenStream(catagories_string);
 		//LINK
+		Set<String> links = target_doc.getLinks();
+		Iterator<String> links_iter = links.iterator();
+		String links_string = "";
+		while (links_iter.hasNext())
+		{
+			links_string += links_iter.next() + ".";
+		}
+		TokenStream ts_link = new TokenStream(links_string);
 		
-		return new IndexableDocument();
+		// Lets ROCK!
+		tz_map.get(INDEXFIELD.TERM).tokenize(ts_term);
+		tz_map.get(INDEXFIELD.AUTHOR).tokenize(ts_author);
+		tz_map.get(INDEXFIELD.CATEGORY).tokenize(ts_catagory);
+		tz_map.get(INDEXFIELD.LINK).tokenize(ts_link);
+		
+		//将解析好的tokenstream装箱
+		IndexableDocument product = new IndexableDocument();
+		product.addField(INDEXFIELD.TERM, ts_term);
+		product.addField(INDEXFIELD.AUTHOR, ts_author);
+		product.addField(INDEXFIELD.CATEGORY, ts_catagory);
+		product.addField(INDEXFIELD.LINK, ts_link);
+		
+		return product;
 	}
 	
 }
