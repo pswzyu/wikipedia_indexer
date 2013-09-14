@@ -65,8 +65,8 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 				// 标题要是default的话就不将标题添加
 			}else
 			{
-				// 在标题两边添加.避免在分句的时候混淆
-				sections_string += "." + tmp_sec.getTitle() + ".";
+				// 在标题两边添加.避免在分句的时候混淆，注意这个空格很必要
+				sections_string += ". " + tmp_sec.getTitle() + ". ";
 			}
 			sections_string += tmp_sec.getText();
 		}
@@ -79,7 +79,7 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		String catagories_string = "";
 		while (catagories_iter.hasNext())
 		{
-			catagories_string += catagories_iter.next() + ".";
+			catagories_string += catagories_iter.next() + ". ";
 		}
 		TokenStream ts_catagory = new TokenStream(catagories_string);
 		//LINK
@@ -88,7 +88,7 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		String links_string = "";
 		while (links_iter.hasNext())
 		{
-			links_string += links_iter.next() + ".";
+			links_string += links_iter.next() + ". ";
 		}
 		TokenStream ts_link = new TokenStream(links_string);
 		

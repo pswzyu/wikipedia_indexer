@@ -4,7 +4,11 @@
 package edu.buffalo.cse.ir.wikiindexer.tokenizer;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -15,12 +19,23 @@ import java.util.Map;
  */
 public class TokenStream implements Iterator<String>{
 	
+	/* 这个类是tokenize进行的场地，要完成append， get token，计数，
+	 * 排序，remove，遍历等很多操作，这里需要分别实现两个以对比性能
+	 * 一种是使用LinkedList进行其他操作， 而在最后需要排序计数的时候
+	 * 		将其转换成ArrayList， 然后进行排序计数
+	 * 一种是使用LinkedList和Tree同时进行存储
+	 * 
+	 * 这里实现的是第一种
+	 */
+	LinkedList<String> token_pool = new LinkedList<String>();
+	ListIterator<String> main_iter;
+	
 	/**
 	 * Default constructor
 	 * @param bldr: THe stringbuilder to seed the stream
 	 */
 	public TokenStream(StringBuilder bldr) {
-		//TODO: Implement this method
+		this(bldr.toString());
 	}
 	
 	/**
@@ -28,15 +43,32 @@ public class TokenStream implements Iterator<String>{
 	 * @param bldr: THe stringbuilder to seed the stream
 	 */
 	public TokenStream(String string) {
-		//TODO: Implement this method
+		token_pool.add(string);
+		main_iter = token_pool.listIterator();
 	}
 	
 	/**
 	 * Method to append tokens to the stream
+	 * 少用！！！
 	 * @param tokens: The tokens to be appended
 	 */
 	public void append(String... tokens) {
-		//TODO: Implement this method
+		
+		// list iteroatr 是fail-fast的， 所以只能用一个迭代器，这里就是循环一圈在环回来	
+		int next_index = main_iter.nextIndex();
+		while (main_iter.hasNext())
+		{
+			main_iter.next();
+		}
+		for (int step = 0; step != tokens.length; ++step)
+		{
+			main_iter.add(tokens[step]);
+		}
+		main_iter = token_pool.listIterator();
+		while (main_iter.nextIndex() != next_index)
+		{
+			main_iter.next();
+		}
 	}
 	
 	/**
@@ -46,8 +78,34 @@ public class TokenStream implements Iterator<String>{
 	 * @return The map as described above, no restrictions on ordering applicable
 	 */
 	public Map<String, Integer> getTokenMap() {
-		//TODO: Implement this method
-		return null;
+		Map<String, Integer> token_count = new HashMap<String, Integer>();
+		
+		int next_index = main_iter.nextIndex();
+		while (main_iter.hasNext())
+		{
+			String key = main_iter.next();
+			if (token_count.containsKey(key))
+			{
+				token_count.put(key, token_count.get(key) + 1);
+			}else
+			{
+				token_count.put(key, 1);
+			}
+		}
+		main_iter = token_pool.listIterator();
+		while (main_iter.nextIndex() != next_index)
+		{
+			String key = main_iter.next();
+			if (token_count.containsKey(key))
+			{
+				token_count.put(key, token_count.get(key) + 1);
+			}else
+			{
+				token_count.put(key, 1);
+			}
+		}
+		
+		return token_count;
 	}
 	
 	/**
@@ -57,8 +115,9 @@ public class TokenStream implements Iterator<String>{
 	 * Operations on the returned collection should NOT affect the token stream
 	 */
 	public Collection<String> getAllTokens() {
-		//TODO: Implement this method
-		return null;
+		LinkedList<String> ret = (LinkedList<String>)token_pool.clone();
+		Collections.copy(ret, token_pool);
+		return ret;
 	}
 	
 	/**
@@ -67,8 +126,26 @@ public class TokenStream implements Iterator<String>{
 	 * @return: THe number of times it occurs within the stream, 0 if not found
 	 */
 	public int query(String token) {
-		//TODO: Implement this method
-		return -1;
+		// list iteroatr 是fail-fast的， 所以只能用一个迭代器，这里就是循环一圈在环回来
+		int count = 0;		
+		int next_index = main_iter.nextIndex();
+		while (main_iter.hasNext())
+		{
+			if (main_iter.next().equals(token))
+			{
+				++count;
+			}
+		}
+		main_iter = token_pool.listIterator();
+		while (main_iter.nextIndex() != next_index)
+		{
+			if (main_iter.next().equals(token))
+			{
+				++count;
+			}
+		}
+		
+		return count;
 	}
 	
 	/**
@@ -76,8 +153,7 @@ public class TokenStream implements Iterator<String>{
 	 * @return true if a token exists to iterate over, false otherwise
 	 */
 	public boolean hasNext() {
-		// TODO: Implement this method
-		return false;
+		return main_iter.hasNext();
 	}
 	
 	/**
@@ -85,8 +161,7 @@ public class TokenStream implements Iterator<String>{
 	 * @return true if a token exists to iterate over, false otherwise
 	 */
 	public boolean hasPrevious() {
-		//TODO: Implement this method
-		return false;
+		return main_iter.hasPrevious();
 	}
 	
 	/**
@@ -96,8 +171,7 @@ public class TokenStream implements Iterator<String>{
 	 * @return The next token from the stream, null if at the end
 	 */
 	public String next() {
-		// TODO: Implement this method
-		return null;
+		return main_iter.next();
 	}
 	
 	/**
@@ -107,38 +181,53 @@ public class TokenStream implements Iterator<String>{
 	 * @return The next token from the stream, null if at the end
 	 */
 	public String previous() {
-		//TODO: Implement this method
-		return null;
+		return main_iter.previous();
 	}
 	
 	/**
 	 * Iterator method: Method to remove the current token from the stream
 	 */
 	public void remove() {
-		// TODO: Implement this method
-		
+		main_iter.remove();
 	}
 	
 	/**
 	 * Method to merge the current token with the previous token, assumes whitespace
 	 * separator between tokens when merged. The token iterator should now point
 	 * to the newly merged token (i.e. the previous one)
+	 * 此方法只能在刚刚调用完next之后使用！！！！
 	 * @return true if the merge succeeded, false otherwise
 	 */
 	public boolean mergeWithPrevious() {
-		//TODO: Implement this method
-		return false;
+		// 如果根本没有上一个元素， 返回失败
+		if (!main_iter.hasPrevious())
+			return false;
+		String merged_tk = main_iter.previous();
+		merged_tk = main_iter.previous() + merged_tk;
+		main_iter.remove();
+		main_iter.next();
+		main_iter.set(merged_tk);
+		
+		return true;
 	}
 	
 	/**
 	 * Method to merge the current token with the next token, assumes whitespace
 	 * separator between tokens when merged. The token iterator should now point
 	 * to the newly merged token (i.e. the current one)
+	 * 此方法只能在刚刚调用万previous方法后调用！！
 	 * @return true if the merge succeeded, false otherwise
 	 */
 	public boolean mergeWithNext() {
-		//TODO: Implement this method
-		return false;
+		// 如果根本没有上一个元素， 返回失败
+		if (!main_iter.hasNext())
+			return false;
+		String merged_tk = main_iter.next();
+		merged_tk += main_iter.next();
+		main_iter.remove();
+		main_iter.previous();
+		main_iter.set(merged_tk);
+		return true;
 	}
 	
 	/**
@@ -147,10 +236,15 @@ public class TokenStream implements Iterator<String>{
 	 * It is expected that remove will be called to delete a token instead of passing
 	 * null or an empty string here.
 	 * The iterator should point to the last set token, i.e, last token in the passed array.
+	 * 此方法只能在刚调用完next之后调用！！
 	 * @param newValue: The array of new values with every new token as a separate element within the array
 	 */
 	public void set(String... newValue) {
-		//TODO: Implement this method
+		main_iter.remove();
+		for (int step = 0; step != newValue.length; ++step)
+		{
+			main_iter.add(newValue[step]);
+		}
 	}
 	
 	/**
@@ -158,15 +252,16 @@ public class TokenStream implements Iterator<String>{
 	 * next must be called to get a token
 	 */
 	public void reset() {
-		//TODO: Implement this method
+		main_iter = token_pool.listIterator();
 	}
 	
 	/**
 	 * Iterator method: Method to set the iterator to beyond the last token in the stream
 	 * previous must be called to get a token
+	 * 少用！！！
 	 */
 	public void seekEnd() {
-		
+		main_iter = token_pool.listIterator(token_pool.size());
 	}
 	
 	/**
@@ -174,6 +269,15 @@ public class TokenStream implements Iterator<String>{
 	 * @param other: The stream to be merged
 	 */
 	public void merge(TokenStream other) {
-		//TODO: Implement this method
+		int other_now = other.main_iter.nextIndex();
+		while (other.hasNext())
+		{
+			main_iter.add(other.next());
+		}
+		other.reset();
+		while (other.main_iter.nextIndex() != other_now)
+		{
+			main_iter.add(other.next());
+		}
 	}
 }
