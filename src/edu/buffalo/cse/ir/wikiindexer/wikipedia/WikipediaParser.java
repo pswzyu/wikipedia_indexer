@@ -62,21 +62,19 @@ public class WikipediaParser {
 		HashMap<String, String> tmpMap = new HashMap<String, String>();
 		// TODO：pswzyu 不用考虑sebsection， 直接把有==A==， 或===A===， 或
 		// 。。。的地方标记， 然后划分开就可以
-		Matcher m = Pattern.compile("(^|\\n)==[^=]+?==").matcher(text);
+		Matcher m = Pattern.compile("(^|(?<=\n))==[^=]+?==").matcher(text);
 		int tmpAnchor = 0;
 		String tmp = "";
 		while(m.find())
 		{
 			if(!tmp.equals(""))
 			{
-//				System.out.println("|||" + tmp + "|||" + "XXX"+ text.substring(tmpAnchor, m.start()) + "XXX");
 				tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor, m.start()));
 			}
 			tmp = m.group();
 			tmpAnchor = m.end();
 		}
 		
-//		System.out.println(tmp + "|||" + text.substring(tmpAnchor));
 		if(!tmp.equals(""))
 		{
 			tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
@@ -100,7 +98,9 @@ public class WikipediaParser {
 	 * How and where split section? 
 	 */
 	public static String parseSectionTitle(String titleStr) {
-		titleStr = titleStr.replaceAll("(^|(?<=\n))(={1,6})([^=]+?)\\2", "$3");
+		if(titleStr==null)
+			return null;
+		titleStr = titleStr.replaceAll("(^|(?<=\n))(={1,6})\\s([^=]+?)\\s\\2", "$3");
 		return titleStr;
 	}
 	
@@ -114,9 +114,25 @@ public class WikipediaParser {
 	/**
 	 * @author xcv58
 	 * I cannot find the usage case of definition lists! 
+	 * Add code to handle definition lists.
 	 */
 	public static String parseListItem(String itemText) {
-		itemText = itemText.replaceAll("[//*//#]{1,3}","");
+		if(itemText == null)
+			return null;
+		itemText = itemText.replaceAll("[//*//#]{1,4}\\s","");
+		itemText = itemText.replaceAll("(^|(?<=\n)):\\s*", "");
+		/*
+		 * 下边的代码是针对Wikipedia Markup页面上来写的。
+		 * 但TA给的TEST代码里只是简单地处理:开头的句子，并没有考虑;的情况。
+		 */
+//		Matcher m = Pattern.compile("(^|(?<=\n));.*?\n(:.*\n)*").matcher(itemText);
+//		while(m.find())
+//		{
+//			String tmp = m.group();
+//			String tmpResult = tmp.replaceAll(";\\s*(.*?)\\s*:", "$1");
+//			tmpResult = tmpResult.replaceAll("(^|(?<=\n))[;:]\\s*", "");
+//			itemText = itemText.replace(tmp, tmpResult);
+//		}
 		return itemText;
 	}
 	
@@ -128,6 +144,8 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed
 	 */
 	public static String parseTextFormatting(String text) {
+		if(text == null)
+			return null;
 		text = text.replaceAll("('''''|'''|'')([^']+?)\\1", "$2");
 		return text;
 	}
@@ -142,7 +160,11 @@ public class WikipediaParser {
 	public static String parseTagFormatting(String text) {
 		//The commented code is less efficient. But much more precise. The second line can only remove all tags.
 //		text = text.replaceAll("(?s)<(.*?)(.*?)>(.*?)</\\1>","$3");
-		text = text.replaceAll("<[^<>]*>","");
+		if(text==null)
+			return null;
+		text = text.replaceAll("((^|(?>=\n))<[^<>]*?>\\s*)|\\s*<[^<>]*?>","");
+		text = text.replaceAll("((^|(?>=\n))(&lt;)[^<>]*?(&gt;)\\s*)|\\s*(&lt;)[^<>]*?(&gt;)", "");
+//		&lt;&gt;
 		return text;
 	}
 	
@@ -158,8 +180,10 @@ public class WikipediaParser {
 	 * Should retain text within tag?
 	 */
 	public static String parseTemplates(String text) {
-		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","$1");
-//		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","");
+//		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","$1");
+		if(text == null)
+			return null;
+		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","");
 		return text;
 	}
 	
