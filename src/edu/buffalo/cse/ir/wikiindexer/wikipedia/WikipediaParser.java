@@ -4,6 +4,7 @@
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -214,8 +215,88 @@ public class WikipediaParser {
  	 * 然后对于像[[Other Page Title|Name show on this page]]这样的链接需要将后边的
  	 * Name show on this page保存在当前的章节中， 将Other Page Title放到link列表中
 	 */
+	/* 
+	 * @author xcv58
+	 * I think someone asked the same question and I responded as if you had k links, 
+	 * you could make the array return either 
+	 * [link text1, link text 2, ...,link text k, link url1, link url2,...,link url k] 
+	 * or in pairs 
+	 * [link text1, link url 1, link text 2, link url 2,...] etc. 
+	 * We wont evaluate it for such a condition, so if you change the behaviour, it should be fine.
+	 * Other alternative is to ensure you pass only one link at a time to this method. 
+	 * You could use some logic to split your input string with multiple links 
+	 * into fragments of single links, and then call this method on each fragment
+	 */
 	public static String[] parseLinks(String text) {
-		return null;
+		ArrayList tmpArray = new ArrayList();
+		Matcher m = Pattern.compile("(?<=\\[\\[).*?(?=\\]\\])").matcher(text);
+		while (m.find()) {
+			String tmp = m.group();
+			if (tmp.matches("[^,(|:#]*")) {
+				tmpArray.add(tmp);
+				tmpArray.add(tmp);
+			} else {
+				int isContainVb = tmp.indexOf("|");
+				int isContainComma = tmp.indexOf(",");
+				int isContainPound = tmp.indexOf("#");
+				int isContainColon = tmp.indexOf(":");
+				if (tmp.startsWith("Category:")) {
+
+				} else if (tmp.startsWith(":Category:")) {
+					tmp = tmp.substring(1);
+					if (isContainVb == -1) {
+						tmpArray.add(tmp);
+						tmpArray.add(tmp);
+					} else {
+						tmpArray.add(tmp.substring(tmp.lastIndexOf(':') + 1,
+								tmp.length() - 1));
+						tmpArray.add(tmp.substring(0, tmp.length() - 1));
+					}
+				} else if (tmp.startsWith("Wikipedia:")) {
+					if (isContainPound != -1) {
+						if (isContainVb != -1)
+							tmp = tmp.substring(0, isContainVb);
+						tmpArray.add(tmp);
+						tmpArray.add(tmp);
+					} else {
+						if (isContainVb != -1)
+							tmp = tmp.substring(0, isContainVb);
+						String tmpText = tmp.substring(isContainColon + 1);
+						tmpText = tmpText.replaceAll("\\s*\\(.*\\)", "");
+						tmpArray.add(tmpText);
+						tmpArray.add(tmp);
+					}
+				} else {
+					if (isContainVb != -1) {
+						if (isContainVb == tmp.length() - 1) {
+							tmp = tmp.substring(0, isContainVb);
+							if (isContainComma != -1) {
+								tmpArray.add(tmp.substring(0, isContainComma));
+							} else {
+								tmpArray.add(tmp.replaceAll("\\s*\\(.*\\)", ""));
+								System.err.println(tmp.replaceAll(
+										"\\s*\\(.*\\)", ""));
+							}
+							tmpArray.add(tmp);
+						} else {
+							String[] tmpStr = tmp.split("\\|");
+							tmpArray.add(tmpStr[1]);
+							tmpArray.add(tmpStr[0]);
+						}
+					} else {
+						if (isContainComma != -1) {
+							tmpArray.add(tmp.substring(0, isContainComma)
+									.replaceAll("\\s*\\(.*\\)", ""));
+						} else {
+							tmpArray.add(tmp.replaceAll("\\s*\\(.*\\)", ""));
+						}
+						tmpArray.add(tmp);
+					}
+				}
+			}
+		}
+		String[] result = (String[]) tmpArray.toArray(new String[tmpArray.size()]);
+		return result;
 	}
 	
 	
