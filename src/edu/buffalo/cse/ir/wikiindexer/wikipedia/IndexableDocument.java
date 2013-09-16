@@ -46,4 +46,15 @@ public class IndexableDocument {
 		return ts_pool.get(key);
 	}
 	
+	/**
+	 * Method to return a unique identifier for the given document.
+	 * It is left to the student to identify what this must be
+	 * But also look at how it is referenced in the indexing process
+	 * @return A unique identifier for the given document
+	 */
+	public String getDocumentIdentifier() {
+		//TODO: Implement this method
+		return null;
+	}
+	
 }
