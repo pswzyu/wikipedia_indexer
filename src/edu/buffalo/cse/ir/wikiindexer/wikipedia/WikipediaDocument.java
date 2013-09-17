@@ -205,7 +205,7 @@ public class WikipediaDocument {
 	/*
 	 * Class to mimic a section of a page
 	 */
-	class Section {
+	public class Section {
 		private String title;
 		private String text;
 		
