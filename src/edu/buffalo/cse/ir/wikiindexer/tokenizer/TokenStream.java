@@ -29,6 +29,7 @@ public class TokenStream implements Iterator<String>{
 	 */
 	LinkedList<String> token_pool = new LinkedList<String>();
 	ListIterator<String> main_iter;
+	HashMap<String, Integer> tokenMap;
 	
 	/**
 	 * Default constructor
@@ -45,6 +46,8 @@ public class TokenStream implements Iterator<String>{
 	public TokenStream(String string) {
 		token_pool.add(string);
 		main_iter = token_pool.listIterator();
+		tokenMap = new HashMap<String, Integer>(1024);
+		tokenMap.put(string, 1);
 	}
 	
 	/**
@@ -63,6 +66,7 @@ public class TokenStream implements Iterator<String>{
 		for (int step = 0; step != tokens.length; ++step)
 		{
 			main_iter.add(tokens[step]);
+			this.mapAdd(tokens[step]);
 		}
 		main_iter = token_pool.listIterator();
 		while (main_iter.nextIndex() != next_index)
@@ -78,34 +82,15 @@ public class TokenStream implements Iterator<String>{
 	 * @return The map as described above, no restrictions on ordering applicable
 	 */
 	public Map<String, Integer> getTokenMap() {
-		Map<String, Integer> token_count = new HashMap<String, Integer>();
-		
-		int next_index = main_iter.nextIndex();
-		while (main_iter.hasNext())
-		{
-			String key = main_iter.next();
-			if (token_count.containsKey(key))
-			{
-				token_count.put(key, token_count.get(key) + 1);
-			}else
-			{
-				token_count.put(key, 1);
-			}
-		}
-		main_iter = token_pool.listIterator();
-		while (main_iter.nextIndex() != next_index)
-		{
-			String key = main_iter.next();
-			if (token_count.containsKey(key))
-			{
-				token_count.put(key, token_count.get(key) + 1);
-			}else
-			{
-				token_count.put(key, 1);
-			}
-		}
-		
-		return token_count;
+//		tokenMap.size();
+//		HashMap<String, Integer> result = new HashMap<String, Integer>(tokenMap.size());
+//		return result;
+		/*
+		 * @author xcv58
+		 * 我认为不需要深克隆了。
+		 * 如果需要我在修改这部分代码。
+		 */
+		return tokenMap;
 	}
 	
 	/**
@@ -126,26 +111,11 @@ public class TokenStream implements Iterator<String>{
 	 * @return: THe number of times it occurs within the stream, 0 if not found
 	 */
 	public int query(String token) {
-		// list iteroatr 是fail-fast的， 所以只能用一个迭代器，这里就是循环一圈在环回来
-		int count = 0;		
-		int next_index = main_iter.nextIndex();
-		while (main_iter.hasNext())
-		{
-			if (main_iter.next().equals(token))
-			{
-				++count;
-			}
-		}
-		main_iter = token_pool.listIterator();
-		while (main_iter.nextIndex() != next_index)
-		{
-			if (main_iter.next().equals(token))
-			{
-				++count;
-			}
-		}
-		
-		return count;
+		Integer result = tokenMap.get(token);
+		if (result == null)
+			return 0;
+		else
+			return result;
 	}
 	
 	/**
@@ -188,7 +158,22 @@ public class TokenStream implements Iterator<String>{
 	 * Iterator method: Method to remove the current token from the stream
 	 */
 	public void remove() {
-		main_iter.remove();
+		String tmp = null;
+		if (main_iter.hasNext()) {
+			main_iter.next();
+			tmp = main_iter.previous();
+		} else if (main_iter.hasPrevious()) {
+			main_iter.previous();
+			tmp = main_iter.next();
+		}
+		// The blow line is true means main_iter doesn't have previous and next,
+		// cannot run remove
+		if (null != tmp) {
+			this.mapRemove(tmp);
+			main_iter.remove();
+		} else {
+			return;
+		}
 	}
 	
 	/**
@@ -203,14 +188,49 @@ public class TokenStream implements Iterator<String>{
 		if (!main_iter.hasPrevious())
 			return false;
 		String merged_tk = main_iter.previous();
-		merged_tk = main_iter.previous() + merged_tk;
+		this.mapRemove(merged_tk);
+		String merged_two = main_iter.previous();
+		this.mapRemove(merged_two);
+		merged_tk = merged_two + merged_tk;
 		main_iter.remove();
 		main_iter.next();
 		main_iter.set(merged_tk);
-		
+		this.mapAdd(merged_tk);
 		return true;
 	}
 	
+	/*
+	 * @author xcv58
+	 * Method to remove element from tokenMap.
+	 */
+	private boolean mapRemove(String s) {
+		Integer tmpCount = tokenMap.get(s);
+		if (tmpCount == null) {
+			tokenMap.put(s, 0);
+			System.err.println("ERROR: tokenMap append ERROR. Doesn't have key: " + s);
+			return false;
+		} else {
+			if(tmpCount.equals("1"))
+				tokenMap.remove(s);
+			else
+				tokenMap.put(s, tmpCount - 1);
+		}
+		return true;
+	}
+
+	/*
+	 * @author xcv58
+	 * Method to add element to tokenMap.
+	 */
+	private boolean mapAdd(String s) {
+		Integer tmpCount = tokenMap.get(s);
+		if (tmpCount == null) {
+			tokenMap.put(s, 1);
+		} else {
+			tokenMap.put(s, tmpCount + 1);
+		}
+		return true;
+	}
 	/**
 	 * Method to merge the current token with the next token, assumes whitespace
 	 * separator between tokens when merged. The token iterator should now point
@@ -223,10 +243,15 @@ public class TokenStream implements Iterator<String>{
 		if (!main_iter.hasNext())
 			return false;
 		String merged_tk = main_iter.next();
-		merged_tk += main_iter.next();
+		this.mapRemove(merged_tk);
+		String merged_two = main_iter.next();
+		this.mapRemove(merged_two);
+		merged_tk += merged_two;
+		merged_tk = merged_two + merged_tk;
 		main_iter.remove();
 		main_iter.previous();
 		main_iter.set(merged_tk);
+		this.mapAdd(merged_tk);
 		return true;
 	}
 	
@@ -240,10 +265,16 @@ public class TokenStream implements Iterator<String>{
 	 * @param newValue: The array of new values with every new token as a separate element within the array
 	 */
 	public void set(String... newValue) {
+		if(!main_iter.hasPrevious())
+			return;
+		main_iter.previous();
+		String tmp = main_iter.next();
+		this.mapRemove(tmp);
 		main_iter.remove();
 		for (int step = 0; step != newValue.length; ++step)
 		{
 			main_iter.add(newValue[step]);
+			this.mapAdd(newValue[step]);
 		}
 	}
 	
@@ -272,12 +303,16 @@ public class TokenStream implements Iterator<String>{
 		int other_now = other.main_iter.nextIndex();
 		while (other.hasNext())
 		{
-			main_iter.add(other.next());
+			String tmp = other.next();
+			main_iter.add(tmp);
+			this.mapAdd(tmp);
 		}
 		other.reset();
 		while (other.main_iter.nextIndex() != other_now)
 		{
-			main_iter.add(other.next());
+			String tmp = other.next();
+			main_iter.add(tmp);
+			this.mapAdd(tmp);
 		}
 	}
 }
