@@ -228,44 +228,64 @@ public class WikipediaParser {
 	 * into fragments of single links, and then call this method on each fragment
 	 */
 	public static String[] parseLinks(String text) {
-		ArrayList tmpArray = new ArrayList();
+		if(null == text)
+		{
+			String[] emptyResult = new String[2];
+			emptyResult[0] = "";
+			emptyResult[1] = "";
+			return emptyResult;
+		}
+		ArrayList<String> tmpArray = new ArrayList<String>();
 		Matcher m = Pattern.compile("(?<=\\[\\[).*?(?=\\]\\])").matcher(text);
+		int parseCount = 0;
 		while (m.find()) {
+			parseCount++;
 			String tmp = m.group();
 			if (tmp.matches("[^,(|:#]*")) {
 				tmpArray.add(tmp);
-				tmpArray.add(tmp);
+				tmpArray.add(WikipediaParser.urlRegulation(tmp));
 			} else {
 				int isContainVb = tmp.indexOf("|");
 				int isContainComma = tmp.indexOf(",");
 				int isContainPound = tmp.indexOf("#");
 				int isContainColon = tmp.indexOf(":");
 				if (tmp.startsWith("Category:")) {
-
+					tmpArray.add(tmp.substring(9));
+					tmpArray.add("");
 				} else if (tmp.startsWith(":Category:")) {
 					tmp = tmp.substring(1);
 					if (isContainVb == -1) {
 						tmpArray.add(tmp);
-						tmpArray.add(tmp);
+						tmpArray.add("");
+//						tmpArray.add(WikipediaParser.urlRegulation(tmp));
 					} else {
 						tmpArray.add(tmp.substring(tmp.lastIndexOf(':') + 1,
 								tmp.length() - 1));
-						tmpArray.add(tmp.substring(0, tmp.length() - 1));
+						tmpArray.add("");
+//						tmpArray.add(WikipediaParser.urlRegulation(tmp.substring(0, tmp.length() - 1)));
 					}
 				} else if (tmp.startsWith("Wikipedia:")) {
 					if (isContainPound != -1) {
 						if (isContainVb != -1)
 							tmp = tmp.substring(0, isContainVb);
 						tmpArray.add(tmp);
-						tmpArray.add(tmp);
+						tmpArray.add("");
+//						tmpArray.add(WikipediaParser.urlRegulation(tmp));
 					} else {
 						if (isContainVb != -1)
 							tmp = tmp.substring(0, isContainVb);
 						String tmpText = tmp.substring(isContainColon + 1);
 						tmpText = tmpText.replaceAll("\\s*\\(.*\\)", "");
 						tmpArray.add(tmpText);
-						tmpArray.add(tmp);
+						tmpArray.add("");
+//						tmpArray.add(WikipediaParser.urlRegulation(tmp));
 					}
+				} else if(tmp.startsWith("Wiktionary:")) {
+					if (isContainVb != -1) {
+						tmp = tmp.substring(0, isContainVb);
+					}
+					tmpArray.add(tmp);
+					tmpArray.add("");
 				} else {
 					if (isContainVb != -1) {
 						if (isContainVb == tmp.length() - 1) {
@@ -274,14 +294,12 @@ public class WikipediaParser {
 								tmpArray.add(tmp.substring(0, isContainComma));
 							} else {
 								tmpArray.add(tmp.replaceAll("\\s*\\(.*\\)", ""));
-								System.err.println(tmp.replaceAll(
-										"\\s*\\(.*\\)", ""));
 							}
-							tmpArray.add(tmp);
+							tmpArray.add(WikipediaParser.urlRegulation(tmp));
 						} else {
 							String[] tmpStr = tmp.split("\\|");
 							tmpArray.add(tmpStr[1]);
-							tmpArray.add(tmpStr[0]);
+							tmpArray.add(WikipediaParser.urlRegulation(tmpStr[0]));
 						}
 					} else {
 						if (isContainComma != -1) {
@@ -290,12 +308,22 @@ public class WikipediaParser {
 						} else {
 							tmpArray.add(tmp.replaceAll("\\s*\\(.*\\)", ""));
 						}
-						tmpArray.add(tmp);
+						tmpArray.add(WikipediaParser.urlRegulation(tmp));
 					}
 				}
 			}
 		}
+		if (parseCount == 0) {
+			tmpArray.add("");
+			tmpArray.add("");
+		}
+
 		String[] result = (String[]) tmpArray.toArray(new String[tmpArray.size()]);
+		return result;
+	}
+	
+	private static String urlRegulation(String s) {
+		String result = s.replaceAll("\\s+", "_");
 		return result;
 	}
 	
