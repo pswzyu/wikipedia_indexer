@@ -44,7 +44,7 @@ public class WikipediaParser {
 	public static HashMap<String, String> splitSection(String text)
 	{
 		HashMap<String, String> tmpMap = new HashMap<String, String>();
-		Matcher m = Pattern.compile("(^|(?<=\n))==[^=]+?==").matcher(text);
+		Matcher m = Pattern.compile("(^|(?<=\n))(={2,6})[^=]+?\\2").matcher(text);
 		int tmpAnchor = 0;
 		String tmp = "";
 		while(m.find())
@@ -215,17 +215,17 @@ public class WikipediaParser {
 			emptyResult[1] = "";
 			return emptyResult;
 		}
-		text = WikipediaParser.parseTagFormatting(text);
+		String textWithoutTag = WikipediaParser.parseTagFormatting(text);
 		ArrayList<String> tmpArray = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder();
 		tmpArray.add("");
 		int start = 0;
 		int end = 0;
-		Matcher m = Pattern.compile("\\[.*?\\]+").matcher(text);
+		Matcher m = Pattern.compile("\\[.*?\\]+").matcher(textWithoutTag);
 		while (m.find()) {
 			String tmp = m.group();
 			start = m.start();
-			sb.append(text.substring(end, start));
+			sb.append(textWithoutTag.substring(end, start));
 			end = m.end();
 			if (tmp.startsWith("[http:")) {
 				int tmpIndex = tmp.indexOf(' ');
@@ -272,7 +272,7 @@ public class WikipediaParser {
 				tmpArray.add(WikipediaParser.getUrlRegulation(tmp));
 			}
 		}
-		sb.append(text.substring(end));
+		sb.append(textWithoutTag.substring(end));
 		tmpArray.set(0, sb.toString());
 		System.out.println(tmpArray);
 		String[] finalResult = (String[]) tmpArray.toArray(new String[tmpArray.size()]);
