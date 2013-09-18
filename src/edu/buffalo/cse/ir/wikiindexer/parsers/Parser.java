@@ -176,13 +176,12 @@ public class Parser {
 					text = WikipediaParser.parseTextFormatting(text);
 					text = WikipediaParser.parseTagFormatting(text);
 					text = WikipediaParser.parseTemplates(text);
-					
-					// TODO:link这TA还没搞清楚 
-					//String[] links = WikipediaParser.parseLinks(text);
-					//for (int step = 0; step != links.length; ++step)
-					//{
-					//	temp_d.publicAddLink(links[step]);
-					//}
+					// 解析链接并将得到的链接加入到link字段中
+					String[] links = WikipediaParser.parseLinks(text);
+					for (int step = 1; step != links.length + 1; step = step + 2)
+					{
+						temp_d.publicAddLink(links[step]);
+					}
 					
 					HashMap<String, String> sections = WikipediaParser.splitSection(text);
 					Iterator iter = sections.keySet().iterator();

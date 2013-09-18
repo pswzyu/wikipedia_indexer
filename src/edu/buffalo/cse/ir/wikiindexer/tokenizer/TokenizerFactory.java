@@ -6,6 +6,7 @@ package edu.buffalo.cse.ir.wikiindexer.tokenizer;
 import java.util.Properties;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.PunctuationDefault;
 
 /**
  * Factory class to instantiate a Tokenizer instance
@@ -58,6 +59,42 @@ public class TokenizerFactory {
 		 * 		return new TOkenizer(new R1(), new R2(), new R3(), new R4(), new R5())
 		 * ... etc
 		 */
+		if (field == INDEXFIELD.TERM)
+		{
+			try {
+				// 分句，大小写，空白，apostrophe， hyphen， special char，dates，num，accent
+				// delim， stem， stopword
+				return new Tokenizer(new PunctuationDefault());
+			} catch (TokenizerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else if (field == INDEXFIELD.AUTHOR)
+		{
+			try {
+				return new Tokenizer(new PunctuationDefault());
+			} catch (TokenizerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (field == INDEXFIELD.CATEGORY)
+		{
+			try {
+				return new Tokenizer(new PunctuationDefault());
+			} catch (TokenizerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else // LINK
+		{
+			try {
+				return new Tokenizer(new PunctuationDefault());
+			} catch (TokenizerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 }

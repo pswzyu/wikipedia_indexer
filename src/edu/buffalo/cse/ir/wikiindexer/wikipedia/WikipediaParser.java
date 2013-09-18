@@ -30,23 +30,6 @@ public class WikipediaParser {
 	 * @param parser: Parser object, I need this reference to call the add method!
 	 * @param docsqueue: add to this queue. silly framework!
 	 */
-	
-//	public WikipediaParser(WikipediaDocument wikidoc, String wikitext, Parser parser,
-//	
-//			ConcurrentLinkedQueue<WikipediaDocument> docsqueue)
-//	{
-//		wikitext = parseSectionTitle(wikitext);
-//		wikitext = parseListItem(wikitext);
-//		wikitext = parseTextFormatting(wikitext);
-//		wikitext = parseTagFormatting(wikitext);
-//		wikitext = parseTemplates(wikitext);
-//		String[] links = parseLinks(wikitext);
-//		for (int step = 0; step != links.length; ++step)
-//		{
-//			wikidoc.addLink(links[step]);
-//		}
-//		parser.add(wikidoc, docsqueue);
-//	}
 	/*
 	 * 用来分割section， 注意：由于junit测试要检验下面的parseSectionTitle， 所以这里必须
 	 * 将section分好， 比如分成 "==SB== hahacontent" 然后“==SB==”这个部分用parseSectionTitle
@@ -61,8 +44,6 @@ public class WikipediaParser {
 	public static HashMap<String, String> splitSection(String text)
 	{
 		HashMap<String, String> tmpMap = new HashMap<String, String>();
-		// TODO：pswzyu 不用考虑sebsection， 直接把有==A==， 或===A===， 或
-		// 。。。的地方标记， 然后划分开就可以
 		Matcher m = Pattern.compile("(^|(?<=\n))==[^=]+?==").matcher(text);
 		int tmpAnchor = 0;
 		String tmp = "";

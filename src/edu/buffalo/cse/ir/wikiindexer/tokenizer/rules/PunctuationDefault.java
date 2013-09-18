@@ -6,7 +6,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.EnglishStemmer.Stemmer;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 @RuleClass(className = RULENAMES.PUNCTUATION)
-public class PunctuationDefualt implements TokenizerRule {
+public class PunctuationDefault implements TokenizerRule {
 
 	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
