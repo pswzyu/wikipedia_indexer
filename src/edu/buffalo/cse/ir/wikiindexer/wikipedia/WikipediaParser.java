@@ -75,10 +75,6 @@ public class WikipediaParser {
 	 * @param titleStr: The string to be parsed
 	 * @return The parsed string with the markup removed
 	 */
-	/*
-	 * @author xcv58
-	 * How and where split section? 
-	 */
 	public static String parseSectionTitle(String titleStr) {
 		if(titleStr==null)
 			return null;
@@ -103,18 +99,6 @@ public class WikipediaParser {
 			return null;
 		itemText = itemText.replaceAll("[//*//#]{1,4}\\s","");
 		itemText = itemText.replaceAll("(^|(?<=\n)):\\s*", "");
-		/*
-		 * 下边的代码是针对Wikipedia Markup页面上来写的。
-		 * 但TA给的TEST代码里只是简单地处理:开头的句子，并没有考虑;的情况。
-		 */
-//		Matcher m = Pattern.compile("(^|(?<=\n));.*?\n(:.*\n)*").matcher(itemText);
-//		while(m.find())
-//		{
-//			String tmp = m.group();
-//			String tmpResult = tmp.replaceAll(";\\s*(.*?)\\s*:", "$1");
-//			tmpResult = tmpResult.replaceAll("(^|(?<=\n))[;:]\\s*", "");
-//			itemText = itemText.replace(tmp, tmpResult);
-//		}
 		return itemText;
 	}
 	
@@ -140,13 +124,10 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed.
 	 */
 	public static String parseTagFormatting(String text) {
-		//The commented code is less efficient. But much more precise. The second line can only remove all tags.
-//		text = text.replaceAll("(?s)<(.*?)(.*?)>(.*?)</\\1>","$3");
 		if(text==null)
 			return null;
 		text = text.replaceAll("((^|(?>=\n))<[^<>]*?>\\s*)|\\s*<[^<>]*?>","");
 		text = text.replaceAll("((^|(?>=\n))(&lt;)[^<>]*?(&gt;)\\s*)|\\s*(&lt;)[^<>]*?(&gt;)", "");
-//		&lt;&gt;
 		return text;
 	}
 	
@@ -157,12 +138,7 @@ public class WikipediaParser {
 	 * @param text: The text to be parsed
 	 * @return The parsed text with the markup removed
 	 */
-	/*
-	 * @author xcv58
-	 * Should retain text within tag?
-	 */
 	public static String parseTemplates(String text) {
-//		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","$1");
 		if(text == null)
 			return null;
 		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","");
