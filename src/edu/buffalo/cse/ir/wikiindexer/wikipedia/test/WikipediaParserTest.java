@@ -180,7 +180,7 @@ public class WikipediaParserTest {
 		//blending etc.
 		assertEquals(new Object[]{"New York also has public transportation", "Public_transport"}, WikipediaParser.parseLinks("New York also has [[public transport|public transportation]]"));
 		assertEquals(new Object[]{"San Francisco also has public transportation", "Public_transport"}, WikipediaParser.parseLinks("San Francisco also has [[public transport]]ation"));
-		assertEquals(new Object[]{"A micro-second", "Micro-"}, WikipediaParser.parseLinks("A [[micro-]]<nowiki />second."));
+		assertEquals(new Object[]{"A micro-second.", "Micro-"}, WikipediaParser.parseLinks("A [[micro-]]<nowiki />second."));
 		assertEquals(new Object[]{"Wikipedia:Manual of Style#Links",""}, WikipediaParser.parseLinks("[[Wikipedia:Manual of Style#Links|]]"));
 		
 		//categories: the method should parse 'em but not index
