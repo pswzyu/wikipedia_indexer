@@ -11,6 +11,8 @@ public class PunctuationDefault implements TokenizerRule {
 	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
 		// 这个rule进行的是分句， 将 .?!并且后边跟大写字母， 或是空白的进行分割
+		stream.reset();
+		stream.next();
 		
 	}
 

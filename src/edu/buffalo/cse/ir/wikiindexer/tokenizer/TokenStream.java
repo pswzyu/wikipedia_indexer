@@ -43,7 +43,11 @@ public class TokenStream implements Iterator<String>{
 	 * @param bldr: THe stringbuilder to seed the stream
 	 */
 	public TokenStream(String string) {
-		token_pool.add(string);
+		if (string != null && !string.isEmpty())
+		{
+			//string.
+			token_pool.add(string);
+		}
 		main_iter = token_pool.listIterator();
 	}
 	
@@ -115,6 +119,10 @@ public class TokenStream implements Iterator<String>{
 	 * Operations on the returned collection should NOT affect the token stream
 	 */
 	public Collection<String> getAllTokens() {
+		if (token_pool.size() == 0)
+		{
+			return null;
+		}
 		LinkedList<String> ret = (LinkedList<String>)token_pool.clone();
 		Collections.copy(ret, token_pool);
 		return ret;
@@ -240,10 +248,33 @@ public class TokenStream implements Iterator<String>{
 	 * @param newValue: The array of new values with every new token as a separate element within the array
 	 */
 	public void set(String... newValue) {
-		main_iter.remove();
-		for (int step = 0; step != newValue.length; ++step)
+		if (newValue == null || newValue.length == 0
+				|| newValue[0] == null || newValue[0].isEmpty())
 		{
-			main_iter.add(newValue[step]);
+			return;
+		}
+		try
+		{
+//			main_iter.remove();
+//			for (int step = 0; step != newValue.length; ++step)
+//			{
+//				main_iter.add(newValue[step]);
+//			}
+			////////
+			if (!main_iter.hasNext())
+			{
+				return;
+			}
+			main_iter.next();
+			main_iter.remove();
+			for (int step = 0; step != newValue.length; ++step)
+			{
+				main_iter.add(newValue[step]);
+			}
+			main_iter.previous();
+		}catch(IllegalStateException ex)
+		{
+			ex.printStackTrace();
 		}
 	}
 	
@@ -269,6 +300,11 @@ public class TokenStream implements Iterator<String>{
 	 * @param other: The stream to be merged
 	 */
 	public void merge(TokenStream other) {
+		if (other == null || other.token_pool == null
+				|| other.token_pool.size() == 0)
+		{
+			return;
+		}
 		int other_now = other.main_iter.nextIndex();
 		while (other.hasNext())
 		{
