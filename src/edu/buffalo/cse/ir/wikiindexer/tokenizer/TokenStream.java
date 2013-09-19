@@ -196,7 +196,11 @@ public class TokenStream implements Iterator<String>{
 	 * Iterator method: Method to remove the current token from the stream
 	 */
 	public void remove() {
-		main_iter.remove();
+		if (main_iter.hasNext())
+		{
+			main_iter.next();
+			main_iter.remove();
+		}
 	}
 	
 	/**
@@ -210,12 +214,31 @@ public class TokenStream implements Iterator<String>{
 		// 如果根本没有上一个元素， 返回失败
 		if (!main_iter.hasPrevious())
 			return false;
+		String tmp = main_iter.previous(); // 先获取上一个元素
+		main_iter.next(); // 回到刚才的位置
+		main_iter.remove(); // 删除刚才的元素
+		tmp += " " + main_iter.next(); // 获取下一元素
+		main_iter.set(tmp); // 把下一个元素替换为链接串
+		return  true;
+	}
+	/*
+	 * Merge With Previous for Human use
+	 * 只能在刚用过next之后使用， 合并刚刚使用next获取的元素和这个元素之前的元素
+	 * 合并完成后指针回到调用之前的位置
+	 */
+	public boolean mwpHumanUse()
+	{
+		// 如果根本没有上一个元素， 返回失败
+		if (!main_iter.hasPrevious())
+			return false;
 		String merged_tk = main_iter.previous();
+		// 如果根本没有上一个元素， 返回失败
+		if (!main_iter.hasPrevious())
+			return false;
 		merged_tk = main_iter.previous() + merged_tk;
 		main_iter.remove();
 		main_iter.next();
 		main_iter.set(merged_tk);
-		
 		return true;
 	}
 	
@@ -230,12 +253,37 @@ public class TokenStream implements Iterator<String>{
 		// 如果根本没有上一个元素， 返回失败
 		if (!main_iter.hasNext())
 			return false;
+		String tmp = main_iter.next(); // 先获取xia一个元素
+		main_iter.previous(); // 回到刚才的位置
+		main_iter.remove(); // 删除刚才的元素
+		tmp += " " + main_iter.previous(); // 获取shang一元素
+		main_iter.set(tmp); // 把下一个元素替换为链接串
+		return  true;
+	}
+	/*
+	 * Merge With Next for Human use
+	 * 只能在刚用过previous之后使用， 合并刚刚使用previous获取的元素和这个元素之hou的元素
+	 * 合并完成后指针回到调用之前的位置
+	 */
+	public boolean mwnHumanUse()
+	{
+		if (!main_iter.hasNext())
+			return false;
 		String merged_tk = main_iter.next();
-		merged_tk += main_iter.next();
+		if (!main_iter.hasNext())
+			return false;
+		merged_tk = main_iter.next() + merged_tk;
 		main_iter.remove();
 		main_iter.previous();
 		main_iter.set(merged_tk);
 		return true;
+	}
+	/*
+	 * 用来向stream中添加元素， 调用listiterator的add
+	 */
+	public void add(String a)
+	{
+		main_iter.add(a);
 	}
 	
 	/**
@@ -255,21 +303,16 @@ public class TokenStream implements Iterator<String>{
 		}
 		try
 		{
-//			main_iter.remove();
-//			for (int step = 0; step != newValue.length; ++step)
-//			{
-//				main_iter.add(newValue[step]);
-//			}
-			////////
 			if (!main_iter.hasNext())
-			{
 				return;
-			}
 			main_iter.next();
 			main_iter.remove();
 			for (int step = 0; step != newValue.length; ++step)
 			{
-				main_iter.add(newValue[step]);
+				if ( !newValue[step].isEmpty() )
+				{
+					main_iter.add(newValue[step]);
+				}
 			}
 			main_iter.previous();
 		}catch(IllegalStateException ex)
@@ -305,15 +348,42 @@ public class TokenStream implements Iterator<String>{
 		{
 			return;
 		}
+//		int other_now = other.main_iter.nextIndex();
+//		while (other.hasNext())
+//		{
+//			main_iter.add(other.next());
+//			main_iter.previous();
+//		}
+//		other.reset();
+//		while (other.main_iter.nextIndex() != other_now)
+//		{
+//			main_iter.add(other.next());
+//			main_iter.previous();
+//		}
 		int other_now = other.main_iter.nextIndex();
-		while (other.hasNext())
+		int this_now = main_iter.nextIndex();
+		// 将当前的stream指针移到尾部
+		while(main_iter.hasNext())
+		{
+			main_iter.next();
+		}
+		// 重置other的指针
+		other.reset();
+		while(other.hasNext())
 		{
 			main_iter.add(other.next());
 		}
+		// 恢复other的指针位置
 		other.reset();
 		while (other.main_iter.nextIndex() != other_now)
 		{
-			main_iter.add(other.next());
+			other.next();
+		}
+		// 恢复this的指针位置
+		reset();
+		while (main_iter.nextIndex() != this_now)
+		{
+			next();
 		}
 	}
 }

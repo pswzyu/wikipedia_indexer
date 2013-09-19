@@ -12,7 +12,8 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 public class PlayGround {
 
 	public static void main(String[] args) {
-		new PlayGround().test();
+		//new PlayGround().test();
+		System.out.println(new String("12345678").substring(2, 4));
 		
 	}
 	public static void aaaa()

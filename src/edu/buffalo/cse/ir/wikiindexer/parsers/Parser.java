@@ -178,10 +178,11 @@ public class Parser {
 					text = WikipediaParser.parseTemplates(text);
 					// 解析链接并将得到的链接加入到link字段中
 					String[] links = WikipediaParser.parseLinks(text);
-					for (int step = 1; step != links.length + 1; step = step + 2)
+					for (int step = 1; step != links.length; ++step)
 					{
 						temp_d.publicAddLink(links[step]);
 					}
+					text = links[0]; // 第一个元素是处理好的text
 					
 					HashMap<String, String> sections = WikipediaParser.splitSection(text);
 					Iterator iter = sections.keySet().iterator();

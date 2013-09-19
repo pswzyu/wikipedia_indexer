@@ -176,7 +176,7 @@ public class TokenStreamTest {
 		
 		//same token repeated
 		stream = new TokenStream("hello");
-		stream.append("hello","hello","hello","helllo");
+		stream.append("hello","hello","hello","hello"); // 原来是helllo
 		assertEquals(0, stream.query("test"));
 		assertEquals(5, stream.query("hello"));
 		stream = null;
