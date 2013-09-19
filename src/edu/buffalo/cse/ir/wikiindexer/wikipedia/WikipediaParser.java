@@ -99,6 +99,19 @@ public class WikipediaParser {
 			return null;
 		itemText = itemText.replaceAll("[//*//#]{1,4}\\s","");
 		itemText = itemText.replaceAll("(^|(?<=\n)):\\s*", "");
+		/*
+		 * 下边的代码是针对Wikipedia Markup页面上来写的。
+		 * 但TA给的TEST代码里只是简单地处理:开头的句子，并没有考虑;的情况。
+		 */
+//		Matcher m = Pattern.compile("(^|(?<=\n));.*?\n(:.*\n)*").matcher(itemText);
+//		while(m.find())
+//		{
+//			String tmp = m.group();
+//			String tmpResult = tmp.replaceAll(";\\s*(.*?)\\s*:", "$1");
+//			tmpResult = tmpResult.replaceAll("(^|(?<=\n))[;:]\\s*", "");
+//			itemText = itemText.replace(tmp, tmpResult);
+//		}
+
 		return itemText;
 	}
 	
