@@ -246,9 +246,17 @@ public class WikipediaParser {
 			} else if (tmp.startsWith("Wiktionary:", 2)) {
 				int lastVb = tmp.lastIndexOf('|');
 				if(tmp.lastIndexOf('|') == -1) {
-					sb.append(tmp.substring(2, tmp.length() - 2));
+					if(tmp.lastIndexOf(':') == 12) {
+						sb.append(tmp.substring(2, tmp.length()-2));
+					} else {
+						sb.append(tmp.substring(13, tmp.length() - 2));
+					}
 				} else if((tmp.lastIndexOf('|') + 3 == tmp.length()) && (tmp.indexOf('|') == lastVb)) {
-					sb.append(tmp.substring(2, lastVb));
+					if(tmp.lastIndexOf(':') == 12) {
+						sb.append(tmp.substring(2, tmp.length()-2));
+					} else {
+						sb.append(tmp.substring(13, tmp.length() - 3));
+					}
 				} else {
 					sb.append(WikipediaParser.getVisibleText(tmp));
 				}
