@@ -14,8 +14,9 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 public class AccentsDefault implements TokenizerRule {
 
 	public void apply(TokenStream stream) throws TokenizerException {
+		if (stream == null)
+			return;
 		stream.reset();
-		
 		while (stream.hasNext()) {
 			String token = stream.next();
 			String tmp = Normalizer.normalize(token, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+","");

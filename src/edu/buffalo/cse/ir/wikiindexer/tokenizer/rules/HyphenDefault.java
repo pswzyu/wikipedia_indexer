@@ -9,6 +9,8 @@ import java.util.regex.*;
 public class HyphenDefault implements TokenizerRule {
 
 	public void apply(TokenStream stream) throws TokenizerException {
+		if (stream == null)
+			return;
 		stream.reset();
 		while (stream.hasNext()) {
 			String tmp = stream.next();
