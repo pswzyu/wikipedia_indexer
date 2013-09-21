@@ -2,8 +2,6 @@ package edu.buffalo.cse.ir.wikiindexer.tokenizer.rules;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
@@ -25,6 +23,4 @@ public class AccentsDefault implements TokenizerRule {
 			}
 		}
 	}
-
-
 }
