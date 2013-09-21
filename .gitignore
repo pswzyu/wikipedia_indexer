@@ -12,4 +12,3 @@
 .settings
 files/*.config
 *.config
-.DS_Store
