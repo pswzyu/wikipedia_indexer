@@ -245,10 +245,15 @@ public class WikipediaParser {
 				tmpArray.add("");
 			} else if (tmp.startsWith("Wiktionary:", 2)) {
 				int lastVb = tmp.lastIndexOf('|');
+				if((tmp.lastIndexOf('|') + 3 == tmp.length()) && (tmp.indexOf('|') == lastVb)) {
+					tmp = tmp.substring(0, tmp.length() - 3) + tmp.substring(tmp.length() - 2);
+				}
 				if(tmp.lastIndexOf('|') == -1) {
-					sb.append(tmp.substring(2, tmp.length() - 2));
-				} else if((tmp.lastIndexOf('|') + 3 == tmp.length()) && (tmp.indexOf('|') == lastVb)) {
-					sb.append(tmp.substring(2, lastVb));
+					if(tmp.lastIndexOf(':') == 12) {
+						sb.append(tmp.substring(2, tmp.length()-2));
+					} else {
+						sb.append(tmp.substring(13, tmp.length() - 2));
+					}
 				} else {
 					sb.append(WikipediaParser.getVisibleText(tmp));
 				}
@@ -263,7 +268,7 @@ public class WikipediaParser {
 		}
 		sb.append(textWithoutTag.substring(end));
 		tmpArray.set(0, sb.toString());
-		System.out.println(tmpArray);
+//		System.out.println(tmpArray);
 		String[] finalResult = (String[]) tmpArray.toArray(new String[tmpArray.size()]);
 		return finalResult;
 	}
