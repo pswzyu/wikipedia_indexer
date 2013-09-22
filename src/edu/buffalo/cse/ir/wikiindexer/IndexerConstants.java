@@ -45,6 +45,12 @@ public interface IndexerConstants {
 	public static final String APOSTROPHERULE = "apos.rule";
 	public static final String HYPHENRULE = "hyph.rule";
 	public static final String SPECIALCHARRULE = "spch.rule";
+	public static final String WHITESPACERULE = "space.rule";
+	public static final String DATERULE = "date.rule";
+	public static final String STOPWORDSRULE = "stwrds.rule";
+	public static final String ACCENTRULE = "accnt.rule";
+	public static final String CAPITALIZATIONRULE = "captl.rule";
+	public static final String NUMBERSRULE = "nmbrs.rule";
 	
 	// pswzyu
 	//pswzyu:dictionary
@@ -52,6 +58,5 @@ public interface IndexerConstants {
 	public static final String DOC_DIC_FILENAME = "dictionary.doc.filename";
 	//#term dic
 	public static final String TERM_DIC_FILENAME = "dictionary.term.filename";
-	
 	
 }
