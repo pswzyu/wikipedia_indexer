@@ -13,4 +13,4 @@
 files/*.config
 *.config
 WikiDump_*.xml
-/files
+/files/
