@@ -1,20 +1,91 @@
 package edu.buffalo.cse.ir.wikiindexer;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
+import edu.buffalo.cse.ir.wikiindexer.indexer.IdAndOccurance;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 
 public class PlayGround {
 
+	BufferedReader br;
+	BufferedWriter bw;
 	public static void main(String[] args) {
 		//new PlayGround().test();
 		System.out.println(new String("12345678").substring(2, 4));
+		PlayGround me = new PlayGround();
+		me.testFile();
+		me.testFile2();
 		
+		TreeMap<Integer, LinkedList<IdAndOccurance> > idx
+			= new TreeMap<Integer, LinkedList<IdAndOccurance> >();
+		idx.put(3, new LinkedList<IdAndOccurance>());
+		idx.get(3).add(new IdAndOccurance(3, 4));
+		LinkedList<IdAndOccurance> a = idx.get(3);
+		Iterator ii = a.iterator();
+		while (ii.hasNext())
+		{
+			IdAndOccurance o = (IdAndOccurance)(ii.next());
+			print(Integer.toString(o.getOcc()));
+		}
+	}
+	public void testFile()
+	{
+		try {
+	        File file = new File("./test.txt");
+	        if( !file.exists() || file.isDirectory())
+	            throw new FileNotFoundException();
+	        FileReader fr = new FileReader(file);
+	        FileWriter fw = new FileWriter(file);
+	        br = new BufferedReader(fr);
+	        bw = new BufferedWriter(fw);
+	        String temp = null;
+	        StringBuffer sb = new StringBuffer();
+	        bw.write("1w2123131231");
+	        bw.flush();
+			temp = br.readLine();
+	        while(temp != null)
+	        {
+	            sb.append(temp+" ");
+	            temp = br.readLine();
+	        }
+	        System.out.println("test1:"+sb.toString());
+		} catch (IOException e) {
+			System.out.println("test1:err");
+			e.printStackTrace();
+		}
+	}
+	public void testFile2()
+	{
+		try {
+	        String temp = null;
+	        StringBuffer sb = new StringBuffer();
+	        //bw.write("1w2123131231");
+	        //bw.flush();
+			temp = br.readLine();
+	        while(temp != null)
+	        {
+	            sb.append(temp+" ");
+	            temp = br.readLine();
+	        }
+	        System.out.println("test2:"+sb.toString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public static void aaaa()
 	{
@@ -128,7 +199,7 @@ public class PlayGround {
 	{
 		print("Next:"+ts.next()+"\n");
 	}
-	public void print(String a)
+	public static void print(String a)
 	{
 		System.out.print(a);
 	}

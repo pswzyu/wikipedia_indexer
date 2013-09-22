@@ -33,7 +33,13 @@ public class LocalDictionary extends Dictionary {
 	 * @return The id as explained above.
 	 */
 	public int lookup(String value) {
-		//TODO Implement this method
-		return -1;
+		if (items.containsKey(value)) // 如果已经有就返回id
+		{
+			return items.get(value);
+		}else
+		{
+			items.put(value, ++auto_increase);
+			return auto_increase;
+		}
 	}
 }

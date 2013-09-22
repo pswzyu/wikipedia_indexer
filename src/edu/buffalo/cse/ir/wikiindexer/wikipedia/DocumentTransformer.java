@@ -104,6 +104,7 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		product.addField(INDEXFIELD.AUTHOR, ts_author);
 		product.addField(INDEXFIELD.CATEGORY, ts_catagory);
 		product.addField(INDEXFIELD.LINK, ts_link);
+		product.setPageTitle(target_doc.getTitle());
 		
 		return product;
 	}

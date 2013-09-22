@@ -41,8 +41,6 @@ import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
  */
 public class Runner {
 
-	// 控制同步transform的线程数量
-	final static int THREAD_CONCURRENT = 1;
 	/**
 	 * @param args
 	 */

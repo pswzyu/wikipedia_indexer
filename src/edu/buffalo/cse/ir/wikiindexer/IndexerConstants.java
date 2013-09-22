@@ -49,5 +49,14 @@ public interface IndexerConstants {
 	public static final String DATERULE = "date.rule";
 	public static final String STOPWORDSRULE = "stwrds.rule";
 	public static final String ACCENTRULE = "accnt.rule";
+	public static final String CAPITALIZATIONRULE = "captl.rule";
+	public static final String NUMBERSRULE = "nmbrs.rule";
+	
+	// pswzyu
+	//pswzyu:dictionary
+	//doc dic
+	public static final String DOC_DIC_FILENAME = "dictionary.doc.filename";
+	//#term dic
+	public static final String TERM_DIC_FILENAME = "dictionary.term.filename";
 	
 }
