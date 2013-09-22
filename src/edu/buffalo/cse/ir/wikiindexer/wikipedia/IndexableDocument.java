@@ -16,7 +16,16 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 public class IndexableDocument {
 	
 	HashMap<INDEXFIELD, TokenStream> ts_pool;
+	String page_title;
 	
+	public String getPageTitle() {
+		return page_title;
+	}
+
+	public void setPageTitle(String page_title) {
+		this.page_title = page_title;
+	}
+
 	/**
 	 * Default constructor
 	 */
@@ -50,11 +59,12 @@ public class IndexableDocument {
 	 * Method to return a unique identifier for the given document.
 	 * It is left to the student to identify what this must be
 	 * But also look at how it is referenced in the indexing process
+	 * 这里应该返回文章的title， 但是大小写问题需要确定一下
 	 * @return A unique identifier for the given document
 	 */
 	public String getDocumentIdentifier() {
 		//TODO: Implement this method
-		return null;
+		return getPageTitle();
 	}
 	
 }

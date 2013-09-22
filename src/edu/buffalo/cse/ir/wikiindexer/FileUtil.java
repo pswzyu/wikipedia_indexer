@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
+
 /**
  * @author nikhillo This class provides utility file lookup methods that can be
  *         safely used without worrying about OS dependencies.
@@ -49,5 +51,23 @@ public class FileUtil {
 		props.load(inStream);
 		inStream.close();
 		return props;
+	}
+	/*
+	 * 返回INDEXFIELD对应的字符串
+	 */
+	public static String getFieldName(INDEXFIELD i)
+	{
+		switch (i)
+		{
+		case AUTHOR:
+			return "author";
+		case CATEGORY:
+			return "category";
+		case TERM:
+			return "term";
+		case LINK:
+			return "link";
+		}
+		return null;
 	}
 }

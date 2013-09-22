@@ -46,5 +46,12 @@ public interface IndexerConstants {
 	public static final String HYPHENRULE = "hyph.rule";
 	public static final String SPECIALCHARRULE = "spch.rule";
 	
+	// pswzyu
+	//pswzyu:dictionary
+	//doc dic
+	public static final String DOC_DIC_FILENAME = "dictionary.doc.filename";
+	//#term dic
+	public static final String TERM_DIC_FILENAME = "dictionary.term.filename";
+	
 	
 }
