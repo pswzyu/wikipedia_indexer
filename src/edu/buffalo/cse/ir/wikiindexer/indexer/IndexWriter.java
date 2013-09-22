@@ -3,7 +3,12 @@
  */
 package edu.buffalo.cse.ir.wikiindexer.indexer;
 
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.SortedSet;
+
+import edu.buffalo.cse.ir.wikiindexer.FileUtil;
 
 /**
  * @author nikhillo
@@ -11,6 +16,12 @@ import java.util.Properties;
  * 
  */
 public class IndexWriter implements Writeable {
+	
+	LocalDictionary dic;
+	int part_number;
+	Properties props;
+	INDEXFIELD field;
+	SortedMap<Integer, LinkedList<IdAndOccurance> > idx;
 	
 	/**
 	 * Constructor that assumes the underlying index is inverted
@@ -44,6 +55,9 @@ public class IndexWriter implements Writeable {
 	 */
 	public IndexWriter(Properties props, INDEXFIELD keyField, INDEXFIELD valueField, boolean isForward) {
 		//TODO: Implement this method
+		dic = new LocalDictionary(props, keyField);
+		this.props = props;
+		this.field = keyField;
 	}
 	
 	/**
@@ -52,7 +66,8 @@ public class IndexWriter implements Writeable {
 	 * @param pnum: The partition number
 	 */
 	public void setPartitionNumber(int pnum) {
-		//TODO: Optionally implement this method
+		part_number = pnum;
+		dic.setSurfix(Integer.toString(part_number));
 	}
 	
 	/**
@@ -88,7 +103,16 @@ public class IndexWriter implements Writeable {
 	 * @throws IndexerException: If any exception occurs while indexing
 	 */
 	public void addToIndex(String key, int valueId, int numOccurances) throws IndexerException {
-		//TODO: Implement this method
+		// for term
+		int term_id = dic.lookup(key);
+		// 如果已经有了就加到队尾
+		if (idx.containsKey(term_id))
+		{
+			idx.get(term_id).add(new IdAndOccurance(valueId, numOccurances));
+		}else // 没有就创建
+		{
+			idx.put(term_id, new LinkedList<IdAndOccurance>());
+		}
 	}
 	
 	/**
@@ -108,7 +132,8 @@ public class IndexWriter implements Writeable {
 	 */
 	public void writeToDisk() throws IndexerException {
 		// TODO Implement this method
-
+		String filename = getWriteFilename();
+		
 	}
 
 	/* (non-Javadoc)
@@ -117,6 +142,11 @@ public class IndexWriter implements Writeable {
 	public void cleanUp() {
 		// TODO Implement this method
 
+	}
+	private String getWriteFilename()
+	{
+		return FileUtil.getRootFilesFolder(props)+"./index/" +
+				FileUtil.getFieldName(field)+"-"+(part_number!=0?part_number:"")+".txt";
 	}
 
 }

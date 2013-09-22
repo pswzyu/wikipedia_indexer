@@ -13,7 +13,10 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
+import edu.buffalo.cse.ir.wikiindexer.indexer.IdAndOccurance;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 
 public class PlayGround {
@@ -26,6 +29,18 @@ public class PlayGround {
 		PlayGround me = new PlayGround();
 		me.testFile();
 		me.testFile2();
+		
+		TreeMap<Integer, LinkedList<IdAndOccurance> > idx
+			= new TreeMap<Integer, LinkedList<IdAndOccurance> >();
+		idx.put(3, new LinkedList<IdAndOccurance>());
+		idx.get(3).add(new IdAndOccurance(3, 4));
+		LinkedList<IdAndOccurance> a = idx.get(3);
+		Iterator ii = a.iterator();
+		while (ii.hasNext())
+		{
+			IdAndOccurance o = (IdAndOccurance)(ii.next());
+			print(Integer.toString(o.getOcc()));
+		}
 	}
 	public void testFile()
 	{
@@ -184,7 +199,7 @@ public class PlayGround {
 	{
 		print("Next:"+ts.next()+"\n");
 	}
-	public void print(String a)
+	public static void print(String a)
 	{
 		System.out.print(a);
 	}

@@ -31,6 +31,7 @@ public abstract class Dictionary implements Writeable {
 	int auto_increase = 1;
 	Properties props;
 	INDEXFIELD field;
+	String surfix = "";
 	
 	/*
 	 * document dictionary 时field需要填写link， 因为link没有dictionary， link的dic其实就是
@@ -43,14 +44,21 @@ public abstract class Dictionary implements Writeable {
 		this.props = props;
 		this.field = field;
 	}
+	/*
+	 * pswzyu: set the surfix to the filename of the dictionary, used to differ different
+	 * partitions to the term dictionary
+	 */
+	public void setSurfix(String s)
+	{
+		surfix = s;
+	}
 	
 	/* (non-Javadoc) // 直接写入硬盘即可，dictionary不用做什么太多的工作， 一片文章只会产生一个记录，三个field才三个
 	 * @see edu.buffalo.cse.ir.wikiindexer.indexer.Writeable#writeToDisk()
 	 */
 	public void writeToDisk() throws IndexerException {
 		// 根据这个dictionary对应的field获取文件名
-		String filename = FileUtil.getRootFilesFolder(props)+"./dics/";
-		filename += FileUtil.getFieldName(field)+".txt";
+		String filename = getWriteFilename();
 		File file = new File(filename);
 		try
 		{
@@ -123,5 +131,10 @@ public abstract class Dictionary implements Writeable {
 	 */
 	public int getTotalTerms() {
 		return items.size();
+	}
+	private String getWriteFilename()
+	{
+		return FileUtil.getRootFilesFolder(props)+"./dics/" +
+				FileUtil.getFieldName(field)+"-"+surfix+".txt";
 	}
 }
