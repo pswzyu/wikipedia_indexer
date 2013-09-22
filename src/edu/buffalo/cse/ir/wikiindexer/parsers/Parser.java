@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Properties;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.text.ParseException;
@@ -21,6 +21,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
 import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaParser;
@@ -55,6 +57,14 @@ public class Parser {
 		 * 然后调用下面的add方法添加到docs中，
 		 * 这里实际上没有必要使用下面那个add， 因为这里不是多线程的
 		 */
+		if (filename == null || filename.equals("")) {
+			return;
+		} else {
+			File f = new File(filename);
+			if (!f.exists()) {
+					return;
+				}
+			}
 		SAXParser sp = null;
 		Inn_MyHandler handler = null;
 		try
@@ -63,6 +73,7 @@ public class Parser {
 	        SAXParserFactory spfac = SAXParserFactory.newInstance();
 	        //Now use the parser factory to create a SAXParser object
 	        sp = spfac.newSAXParser();
+	        //the follow line cannot pass test. And I don't know reason.
 	        handler = new Inn_MyHandler(docs, this);
 	        sp.parse(filename, handler);
 		}

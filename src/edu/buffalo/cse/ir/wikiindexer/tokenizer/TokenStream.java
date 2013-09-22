@@ -38,6 +38,7 @@ public class TokenStream implements Iterator<String>{
 		this(bldr.toString());
 	}
 	
+	
 	/**
 	 * Overloaded constructor
 	 * @param bldr: THe stringbuilder to seed the stream
@@ -57,7 +58,9 @@ public class TokenStream implements Iterator<String>{
 	 * @param tokens: The tokens to be appended
 	 */
 	public void append(String... tokens) {
-		
+		if (tokens == null) {
+			return;
+		}
 		// list iteroatr 是fail-fast的， 所以只能用一个迭代器，这里就是循环一圈在环回来	
 		int next_index = main_iter.nextIndex();
 		while (main_iter.hasNext())
@@ -66,6 +69,9 @@ public class TokenStream implements Iterator<String>{
 		}
 		for (int step = 0; step != tokens.length; ++step)
 		{
+			if (tokens[step] == null || tokens[step].equals("")) {
+				continue;
+			}
 			main_iter.add(tokens[step]);
 		}
 		main_iter = token_pool.listIterator();
@@ -82,6 +88,9 @@ public class TokenStream implements Iterator<String>{
 	 * @return The map as described above, no restrictions on ordering applicable
 	 */
 	public Map<String, Integer> getTokenMap() {
+		if (token_pool.size() == 0) {
+			return null;
+		}
 		Map<String, Integer> token_count = new HashMap<String, Integer>();
 		
 		int next_index = main_iter.nextIndex();
@@ -179,7 +188,11 @@ public class TokenStream implements Iterator<String>{
 	 * @return The next token from the stream, null if at the end
 	 */
 	public String next() {
-		return main_iter.next();
+		if (main_iter.hasNext()) {
+			return main_iter.next();
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -189,7 +202,12 @@ public class TokenStream implements Iterator<String>{
 	 * @return The next token from the stream, null if at the end
 	 */
 	public String previous() {
-		return main_iter.previous();
+		if (main_iter.hasPrevious()) {
+			return main_iter.previous();
+		} else {
+			return null;
+		}
+		
 	}
 	
 	/**
@@ -211,15 +229,30 @@ public class TokenStream implements Iterator<String>{
 	 * @return true if the merge succeeded, false otherwise
 	 */
 	public boolean mergeWithPrevious() {
-		// 如果根本没有上一个元素， 返回失败
-		if (!main_iter.hasPrevious())
+		if (!main_iter.hasPrevious()) {
 			return false;
-		String tmp = main_iter.previous(); // 先获取上一个元素
-		main_iter.next(); // 回到刚才的位置
-		main_iter.remove(); // 删除刚才的元素
-		tmp += " " + main_iter.next(); // 获取下一元素
-		main_iter.set(tmp); // 把下一个元素替换为链接串
-		return  true;
+		}
+		String tmp = main_iter.previous();
+		main_iter.next();
+		if (!main_iter.hasNext()) {
+			return false;
+		} else {
+			main_iter.previous();
+		}
+		main_iter.remove();
+		tmp += " " + main_iter.next();
+		main_iter.previous();
+		main_iter.set(tmp);
+		return true;
+		// 如果根本没有上一个元素， 返回失败
+//		if (!main_iter.hasPrevious())
+//			return false;
+//		String tmp = main_iter.previous(); // 先获取上一个元素
+//		main_iter.next(); // 回到刚才的位置
+//		main_iter.remove(); // 删除刚才的元素
+//		tmp += " " + main_iter.next(); // 获取下一元素
+//		main_iter.set(tmp); // 把下一个元素替换为链接串
+//		return  true;
 	}
 	/*
 	 * Merge With Previous for Human use
@@ -251,14 +284,28 @@ public class TokenStream implements Iterator<String>{
 	 */
 	public boolean mergeWithNext() {
 		// 如果根本没有上一个元素， 返回失败
-		if (!main_iter.hasNext())
+		if (!main_iter.hasNext()) {
 			return false;
-		String tmp = main_iter.next(); // 先获取xia一个元素
-		main_iter.previous(); // 回到刚才的位置
-		main_iter.remove(); // 删除刚才的元素
-		tmp += " " + main_iter.previous(); // 获取shang一元素
-		main_iter.set(tmp); // 把下一个元素替换为链接串
-		return  true;
+		}
+		String tmp = main_iter.next();
+		main_iter.previous();
+		main_iter.remove();
+		if (!main_iter.hasNext()) {
+			this.reset();
+			return false;
+		}
+		tmp += " " + main_iter.next();
+		main_iter.set(tmp);
+		main_iter.previous();
+		return true;
+//		if (!main_iter.hasNext())
+//			return false;
+//		String tmp = main_iter.next(); // 先获取xia一个元素
+//		main_iter.previous(); // 回到刚才的位置
+//		main_iter.remove(); // 删除刚才的元素
+//		tmp += " " + main_iter.previous(); // 获取shang一元素
+//		main_iter.set(tmp); // 把下一个元素替换为链接串
+//		return  true;
 	}
 	/*
 	 * Merge With Next for Human use
