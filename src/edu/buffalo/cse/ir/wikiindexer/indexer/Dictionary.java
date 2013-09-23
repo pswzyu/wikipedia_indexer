@@ -132,9 +132,5 @@ public abstract class Dictionary implements Writeable {
 	public int getTotalTerms() {
 		return items.size();
 	}
-	private String getWriteFilename()
-	{
-		return FileUtil.getRootFilesFolder(props)+"./dics/" +
-				FileUtil.getFieldName(field)+"-"+surfix+".txt";
-	}
+	protected abstract String getWriteFilename();
 }

@@ -18,8 +18,7 @@ public class Partitioner {
 	 * @return: Total number of partitions
 	 */
 	public static int getNumPartitions() {
-		//TODO: Implement this method
-		return -1;
+		return 4;
 	}
 	
 	/**
@@ -30,7 +29,15 @@ public class Partitioner {
 	 * @return The assigned partition number for the given term
 	 */
 	public static int getPartitionNumber (String term) {
-		//TDOD: Implement this method
+		char start = term.charAt(0);
+		if ("taivjq".indexOf(start) != -1)
+			return 0;
+		if ("sowyuk".indexOf(start) != -1)
+			return 1;
+		if ("hbcegnx".indexOf(start) != -1)
+			return 2;
+		if ("mfpdrlz".indexOf(start) != -1)
+			return 3;
 		return -1;
 	}
 }

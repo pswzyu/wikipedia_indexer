@@ -5,6 +5,8 @@ package edu.buffalo.cse.ir.wikiindexer.indexer;
 
 import java.util.Properties;
 
+import edu.buffalo.cse.ir.wikiindexer.FileUtil;
+
 /**
  * @author nikhillo
  * This class represents a subclass of a Dictionary class that is
@@ -41,6 +43,15 @@ public class SharedDictionary extends Dictionary {
 			items.put(value, ++auto_increase);
 			return auto_increase;
 		}
+	}
+
+	@Override
+	protected String getWriteFilename() {
+		String fieldname = FileUtil.getFieldName(field);
+		if (fieldname.equals("link"))
+			fieldname = "document";
+		return FileUtil.getRootFilesFolder(props)+"./dics/" +
+			fieldname+(surfix.equals("")?"":"-")+surfix+".txt";
 	}
 
 }

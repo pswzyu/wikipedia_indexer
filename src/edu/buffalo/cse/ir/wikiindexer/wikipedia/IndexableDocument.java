@@ -59,12 +59,12 @@ public class IndexableDocument {
 	 * Method to return a unique identifier for the given document.
 	 * It is left to the student to identify what this must be
 	 * But also look at how it is referenced in the indexing process
-	 * 这里应该返回文章的title， 但是大小写问题需要确定一下
+	 * 这里将title拼成一个连接的样子用parserLinks解析， 保证和link一样
 	 * @return A unique identifier for the given document
 	 */
 	public String getDocumentIdentifier() {
 		//TODO: Implement this method
-		return getPageTitle();
+		return WikipediaParser.parseLinks("[["+getPageTitle()+"]]")[1];
 	}
 	
 }

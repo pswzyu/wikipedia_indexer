@@ -3,10 +3,19 @@
  */
 package edu.buffalo.cse.ir.wikiindexer.indexer;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 
 import edu.buffalo.cse.ir.wikiindexer.FileUtil;
 
@@ -18,10 +27,11 @@ import edu.buffalo.cse.ir.wikiindexer.FileUtil;
 public class IndexWriter implements Writeable {
 	
 	LocalDictionary dic;
-	int part_number;
+	int part_number = 0;
+	boolean isFwd;
 	Properties props;
 	INDEXFIELD field;
-	SortedMap<Integer, LinkedList<IdAndOccurance> > idx;
+	TreeMap<String, LinkedList<IdAndOccurance> > idx;
 	
 	/**
 	 * Constructor that assumes the underlying index is inverted
@@ -56,8 +66,10 @@ public class IndexWriter implements Writeable {
 	public IndexWriter(Properties props, INDEXFIELD keyField, INDEXFIELD valueField, boolean isForward) {
 		//TODO: Implement this method
 		dic = new LocalDictionary(props, keyField);
+		idx = new TreeMap<String, LinkedList<IdAndOccurance> >();
 		this.props = props;
 		this.field = keyField;
+		this.isFwd = isForward;
 	}
 	
 	/**
@@ -79,7 +91,8 @@ public class IndexWriter implements Writeable {
 	 * @throws IndexerException: If any exception occurs while indexing
 	 */
 	public void addToIndex(int keyId, int valueId, int numOccurances) throws IndexerException {
-		//TODO: Implement this method
+		// 只有link会进这里
+		addToIndex(Integer.toString(keyId), valueId, numOccurances);
 	}
 	
 	/**
@@ -103,16 +116,20 @@ public class IndexWriter implements Writeable {
 	 * @throws IndexerException: If any exception occurs while indexing
 	 */
 	public void addToIndex(String key, int valueId, int numOccurances) throws IndexerException {
-		// for term
-		int term_id = dic.lookup(key);
-		// 如果已经有了就加到队尾
-		if (idx.containsKey(term_id))
+		if (field != INDEXFIELD.TERM) // 如果不是term， 查字典然后加入index
 		{
-			idx.get(term_id).add(new IdAndOccurance(valueId, numOccurances));
+			key = Integer.toString(dic.lookup(key));
+		}
+		// 如果已经有了就加到队尾
+		LinkedList<IdAndOccurance> find = idx.get(key);
+		if (find != null)
+		{
+			find.add(new IdAndOccurance(valueId, numOccurances));
 		}else // 没有就创建
 		{
-			idx.put(term_id, new LinkedList<IdAndOccurance>());
+			idx.put(key, new LinkedList<IdAndOccurance>());
 		}
+		
 	}
 	
 	/**
@@ -133,7 +150,45 @@ public class IndexWriter implements Writeable {
 	public void writeToDisk() throws IndexerException {
 		// TODO Implement this method
 		String filename = getWriteFilename();
-		
+		File file = new File(filename);
+		try
+		{
+	        if( !file.exists())
+	        	file.createNewFile();
+	        FileWriter fw = new FileWriter(file);
+	        BufferedWriter bw = new BufferedWriter(fw);
+	        StringBuffer str = new StringBuffer();
+	        Set<Entry<String, LinkedList<IdAndOccurance> > > all = idx.entrySet();
+	        Iterator<Entry<String, LinkedList<IdAndOccurance>>> iter = all.iterator();
+	        while (iter.hasNext())
+	        {
+	        	Entry<String, LinkedList<IdAndOccurance>> this_entry = iter.next();
+	        	ListIterator<IdAndOccurance> list_iter = this_entry.getValue().listIterator();
+	        	str.append(this_entry.getKey() + ":=");
+	        	if ( list_iter.hasNext() )
+	        	{
+		        	while (true)
+		        	{
+		        		IdAndOccurance tmp = list_iter.next();
+		        		str.append(tmp.id+","+tmp.occ);
+		        		if (list_iter.hasNext())
+		        		{
+		        			str.append(";");
+		        		}else
+		        		{
+		        			break;
+		        		}
+		        	}
+	        	}
+	        }
+	        bw.write(str.toString());
+	        bw.flush();
+	        bw.close();
+	        fw.close();
+		}catch(IOException ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -146,7 +201,7 @@ public class IndexWriter implements Writeable {
 	private String getWriteFilename()
 	{
 		return FileUtil.getRootFilesFolder(props)+"./index/" +
-				FileUtil.getFieldName(field)+"-"+(part_number!=0?part_number:"")+".txt";
+				FileUtil.getFieldName(field)+(part_number!=0?"-"+part_number:"")+".txt";
 	}
 
 }

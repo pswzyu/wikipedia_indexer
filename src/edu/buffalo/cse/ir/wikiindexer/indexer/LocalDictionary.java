@@ -5,6 +5,8 @@ package edu.buffalo.cse.ir.wikiindexer.indexer;
 
 import java.util.Properties;
 
+import edu.buffalo.cse.ir.wikiindexer.FileUtil;
+
 /**
  * @author nikhillo
  * This class represents a subclass of a Dictionary class that is
@@ -41,5 +43,11 @@ public class LocalDictionary extends Dictionary {
 			items.put(value, ++auto_increase);
 			return auto_increase;
 		}
+	}
+
+	@Override
+	protected String getWriteFilename() {
+		return FileUtil.getRootFilesFolder(props)+"./dics/" +
+				FileUtil.getFieldName(field)+(surfix.equals("")?"":"-")+surfix+".txt";
 	}
 }

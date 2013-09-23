@@ -39,8 +39,61 @@ public class PlayGround {
 		while (ii.hasNext())
 		{
 			IdAndOccurance o = (IdAndOccurance)(ii.next());
-			print(Integer.toString(o.getOcc()));
+			print(Integer.toString(o.getOcc())+"\n");
 		}
+		new PlayGround().testMerge();
+	}
+	public void testMerge()
+	{
+		LinkedList<IdAndOccurance> li = new LinkedList<IdAndOccurance>();
+		li.add(new IdAndOccurance(5, 1));
+		li.add(new IdAndOccurance(9, 1));
+		li.add(new IdAndOccurance(10, 1));
+		li.add(new IdAndOccurance(11, 1));
+		String[] split2 = {"12,1"};
+		ListIterator<IdAndOccurance> iter = li.listIterator();
+		int list_id_now = 0;
+		IdAndOccurance t = null;
+		for (int step1 = 0; step1 != split2.length; ++step1)
+		{
+			String[] split3 = split2[step1].split(","); // 0->id,1->occ
+			boolean jumped = false;
+			while (true)
+			{
+				// 目标是将list指针移到第一个比split里的大的元素
+				if (!iter.hasNext() ||
+						list_id_now >= Integer.parseInt(split3[0]) )
+				{
+					break;
+				}
+				t = iter.next();
+				list_id_now = t.id;
+				jumped = true;
+			}
+			if ( jumped && list_id_now >= Integer.parseInt(split3[0]) && iter.hasPrevious())
+				iter.previous();
+			
+			if (list_id_now == Integer.parseInt(split3[0]))
+			{
+				t.occ += Integer.parseInt(split3[1]);
+				
+			}else
+			{
+				iter.add(new IdAndOccurance( Integer.parseInt(split3[0]),
+						Integer.parseInt(split3[1]) ));
+			}
+		}
+		printList1(li);
+	}
+	public static void printList1(LinkedList<IdAndOccurance> a)
+	{
+		for (ListIterator<IdAndOccurance> iter = a.listIterator();
+				iter.hasNext(); )
+		{
+			IdAndOccurance t = iter.next();
+			System.out.print( t.id + ":" + t.occ + "  ;  ");
+		}
+		System.out.print("\n");
 	}
 	public void testFile()
 	{
