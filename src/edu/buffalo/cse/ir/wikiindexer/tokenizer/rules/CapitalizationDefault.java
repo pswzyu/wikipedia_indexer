@@ -14,10 +14,12 @@ public class CapitalizationDefault implements TokenizerRule {
 	public void apply(TokenStream stream) throws TokenizerException {
 		stream.reset();
 		// 遍历stream中的每一个元素
-		while (stream.hasNext())
+		if (stream.hasNext())
 		{
 			String token = stream.next();
+			stream.previous();
 			stream.set(token.toLowerCase());
+			stream.next();
 		}
 	}
 
