@@ -338,6 +338,9 @@ public class TokenStream implements Iterator<String>{
 	 */
 	public void add(String a)
 	{
+		if (a == "" || a.isEmpty()) {
+			return;
+		}
 		main_iter.add(a);
 	}
 	
@@ -366,7 +369,8 @@ public class TokenStream implements Iterator<String>{
 			{
 				if ( !newValue[step].isEmpty() )
 				{
-					main_iter.add(newValue[step]);
+					this.add(newValue[step]);
+//					main_iter.add(newValue[step]);
 				}
 			}
 			main_iter.previous();
