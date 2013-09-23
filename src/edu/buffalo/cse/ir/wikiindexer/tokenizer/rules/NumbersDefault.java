@@ -6,10 +6,9 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 import java.lang.Character;
 
-@RuleClass(className = RULENAMES.PUNCTUATION)
+@RuleClass(className = RULENAMES.NUMBERS)
 public class NumbersDefault implements TokenizerRule {
 
-	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
 		if (stream == null) {
 			return;

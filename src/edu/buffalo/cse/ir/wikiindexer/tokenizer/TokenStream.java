@@ -138,9 +138,9 @@ public class TokenStream implements Iterator<String>{
 		LinkedList<String> ret = (LinkedList<String>)token_pool.clone();
 		Collections.copy(ret, token_pool);
 		//For StopwordRuleTest
-		if(ret.size()==0) {
-			ret.add("");
-		}
+//		if(ret.size()==0) {
+//			ret.add("");
+//		}
 		return ret;
 	}
 	

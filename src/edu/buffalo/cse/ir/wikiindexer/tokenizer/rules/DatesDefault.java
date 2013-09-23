@@ -122,8 +122,7 @@ public class DatesDefault implements TokenizerRule {
 						day = "0" + token;
 					}
 				} else {
-					System.out.println("Current token: " + token);
-					this.processTemporal(stream, false);
+					this.processTemporal(stream);
 				}
 			}
 		}
