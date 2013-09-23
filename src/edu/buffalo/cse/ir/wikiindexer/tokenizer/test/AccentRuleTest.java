@@ -21,7 +21,8 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 @RunWith(Parameterized.class)
 public class AccentRuleTest extends TokenizerRuleTest {
 
-	public AccentRuleTest(Properties props, String constantName) {
+//	public AccentRuleTest(Properties props, String constantName) {
+	public AccentRuleTest(Properties props) {
 		super(props, IndexerConstants.ACCENTRULE);
 	}
 	

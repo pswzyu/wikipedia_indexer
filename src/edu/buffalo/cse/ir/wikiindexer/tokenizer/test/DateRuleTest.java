@@ -23,10 +23,12 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 @RunWith(Parameterized.class)
 public class DateRuleTest extends TokenizerRuleTest {
 
-	public DateRuleTest(Properties props, String constantName) {
+//	public DateRuleTest(Properties props, String constantName) {
+//		super(props, IndexerConstants.DATERULE);
+//	}
+	public DateRuleTest(Properties props) {
 		super(props, IndexerConstants.DATERULE);
 	}
-
 	@Test
 	public void testRule() {
 		if (rule == null) {
@@ -101,10 +103,10 @@ public class DateRuleTest extends TokenizerRuleTest {
 						new Object[] { "Apple", "is", "one", "of", "the",
 								"world's", "most", "valuable", "publicly",
 								"traded", "companies", "in",
-								"20110101–20120101." },
+								"20110101√ê20120101." },
 						runtest("Apple", "is", "one", "of", "the", "world's",
 								"most", "valuable", "publicly", "traded",
-								"companies", "in", "2011–12."));
+								"companies", "in", "2011√ê12."));
 			} catch (TokenizerException e) {
 
 			}

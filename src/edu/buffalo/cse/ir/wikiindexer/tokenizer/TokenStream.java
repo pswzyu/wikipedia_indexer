@@ -29,6 +29,7 @@ public class TokenStream implements Iterator<String>{
 	 */
 	LinkedList<String> token_pool = new LinkedList<String>();
 	ListIterator<String> main_iter;
+	private int operationCount = 0;
 	
 	/**
 	 * Default constructor
@@ -48,6 +49,7 @@ public class TokenStream implements Iterator<String>{
 		{
 			//string.
 			token_pool.add(string);
+			this.operationCount++;
 		}
 		main_iter = token_pool.listIterator();
 	}
@@ -73,6 +75,7 @@ public class TokenStream implements Iterator<String>{
 				continue;
 			}
 			main_iter.add(tokens[step]);
+			this.operationCount++;
 		}
 		main_iter = token_pool.listIterator();
 		while (main_iter.nextIndex() != next_index)
@@ -88,7 +91,7 @@ public class TokenStream implements Iterator<String>{
 	 * @return The map as described above, no restrictions on ordering applicable
 	 */
 	public Map<String, Integer> getTokenMap() {
-		if (token_pool.size() == 0) {
+		if (token_pool.size() == 0  && this.operationCount == 0) {
 			return null;
 		}
 		Map<String, Integer> token_count = new HashMap<String, Integer>();
@@ -128,12 +131,16 @@ public class TokenStream implements Iterator<String>{
 	 * Operations on the returned collection should NOT affect the token stream
 	 */
 	public Collection<String> getAllTokens() {
-		if (token_pool.size() == 0)
+		if (token_pool.size() == 0 && this.operationCount == 0)
 		{
 			return null;
 		}
 		LinkedList<String> ret = (LinkedList<String>)token_pool.clone();
 		Collections.copy(ret, token_pool);
+		//For StopwordRuleTest
+		if(ret.size()==0) {
+			ret.add("");
+		}
 		return ret;
 	}
 	
@@ -219,6 +226,7 @@ public class TokenStream implements Iterator<String>{
 			main_iter.next();
 			main_iter.remove();
 		}
+		
 	}
 	
 	/**

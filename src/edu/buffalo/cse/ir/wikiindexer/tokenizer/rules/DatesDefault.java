@@ -5,33 +5,33 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 @RuleClass(className = RULENAMES.DATES)
-public class DatesDefault {
-
-	public DatesDefault() {
-		
-	}
+public class DatesDefault implements TokenizerRule {
+	private boolean isBC = false,
+			isAD = false,
+			containDate = false,
+			containTime = false,
+			containDot = false,
+			containComma = false,
+			containPM = false;
+	private String year = "1900",
+			month = null,
+			day = null,
+			hour = "00",
+			minute = "00",
+			second = "00";
+	private int tokenCount = 0;
+	
 	public void apply(TokenStream stream) throws TokenizerException {
 		if (stream == null)
 			return;
 		stream.reset();
-		boolean isBC = false,
-				isAD = false,
-				containDate = false,
-				containTime = false,
-				containPM = false;
-		String year = "1900",
-				month = null,
-				day = null,
-				hour = "00",
-				minute = "00",
-				second = "00";
-		int tokenCount = 0;
+
 		while (stream.hasNext()) {
 			String token = stream.next();
 			token = token.toLowerCase();
 			switch (token) {
 			case "jan":
-			case "january": tokenCount += 1; containDate = true; month = "01"; break;
+			case "january": tokenCount += 1; containDate = true; System.out.println("month= " + token); month = "01"; break;
 			case "feb":
 			case "february": tokenCount += 1; month = "02"; break;
 			case "mar":
@@ -60,14 +60,31 @@ public class DatesDefault {
 			case "friday":
 			case "saturday":
 			case "sunday":
-			case "on":
+			case "sunday,":
 			case "utc": tokenCount += 1; break;
-			case "bc":
-			case "bc.": tokenCount +=1; isBC = true; break;
-			case "ad":
-			case "ad.": tokenCount +=1; isAD = true; break;
+			case "on": if(tokenCount > 0) {
+				System.out.println("ON");
+				tokenCount += 1;
+			}
+			break;
+			case "am.":
+			case "pm.": containDot = true;
+			case "am":
+			case "pm": tokenCount += 1; containTime = true; break;
+			case "bc.": containDot = true;
+			case "bc": tokenCount +=1; isBC = true; containDate = true; break;
+			case "ad.": containDot = true;
+			case "ad": tokenCount +=1; isAD = true; break;
 			default:
 				if (token.matches("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.]*")) {
+					tokenCount += 1;
+					containTime = true;
+					if (token.contains(",")) {
+						containComma = true;
+					}
+					if (token.contains(".")) {
+						containDot = true;
+					}
 					int indexOfColon = token.indexOf(':');
 					int lastIndexOfColon = token.lastIndexOf(':');
 					hour = token.substring(0, indexOfColon);
@@ -78,7 +95,15 @@ public class DatesDefault {
 					if(token.contains("pm")) {
 						containPM = true;
 					}
-				} else if (token.matches("\\d{1,4}")) {
+				} else if (token.matches("\\d{1,4}[,\\.]*")) {
+					tokenCount += 1;
+					if (token.contains(",")) {
+						containComma = true;
+					}
+					if (token.contains(".")) {
+						containDot = true;
+					}
+					token = token.replaceAll("[,\\.]", "");
 					int length = token.length();
 					containDate = true;
 					if (length == 4) {
@@ -86,8 +111,8 @@ public class DatesDefault {
 					} else if (length == 3) {
 						year = "0" + token;
 					} else if (length == 2) {
-						if (isAD || isBC) {
-							if (year.equals(null)) {
+						if (isAD || isBC || (Integer.valueOf(token) > 31)) {
+							if (year == "1900") {
 								year = "00" + token;
 							}
 						} else {
@@ -96,44 +121,81 @@ public class DatesDefault {
 					} else {
 						day = "0" + token;
 					}
-				} else if (true) {
-					if (tokenCount > 0) {
-						String temporal = "";
-						while (tokenCount > 0) {
-							tokenCount -= 1;
-							stream.remove();
-						}
-						if (containDate) {
-							if (month.equals(null)) {
-								month = "01";
-							}
-							if (day.equals(null)) {
-								day = "01";
-							}
-							if (isBC) {
-								temporal += "-";
-							}
-							temporal += year + month + day;
-						}
-						if (containTime) {
-							if (temporal.length() > 2) {
-								temporal += " ";
-							}
-							if (containPM) {
-								Integer tmpHour = Integer.valueOf(hour);
-								tmpHour += 12;
-								hour = tmpHour.toString();
-							}
-							if(hour.length() == 1) {
-								hour = "0" + hour;
-							}
-							temporal += hour + ":" + minute + ":" + second;
-						}
-						stream.set(temporal);
-					}
+				} else {
+					System.out.println("Current token: " + token);
+					this.processTemporal(stream, false);
 				}
 			}
 		}
+		this.processTemporal(stream, true);
+		stream.reset();
+	}
+	
+	private void processTemporal(TokenStream stream) {
+		this.processTemporal(stream, false);
+	}
+	
+	private void processTemporal(TokenStream stream, boolean lastToken) {
+		if (tokenCount > 0) {
+			if (!lastToken) {
+				stream.previous();
+			}
+			String temporal = "";
+			while (tokenCount > 0) {
+				tokenCount -= 1;
+				stream.previous();
+				stream.remove();
+			}
+			if (containDate) {
+				if (month == null) {
+					month = "01";
+				}
+				if (day == null) {
+					day = "01";
+				}
+				if (isBC) {
+					temporal += "-";
+				}
+				temporal += year + month + day;
+			}
+			if (containTime) {
+				if (temporal.length() > 2) {
+					temporal += " ";
+				}
+				if (containPM) {
+					Integer tmpHour = Integer.valueOf(hour);
+					tmpHour += 12;
+					hour = tmpHour.toString();
+				}
+				if(hour.length() == 1) {
+					hour = "0" + hour;
+				}
+				temporal += hour + ":" + minute + ":" + second;
+			}
+			if (containDot) {
+				temporal += ".";
+			}
+//			System.out.println(temporal);
+//			System.out.println(stream.getAllTokens());
+			stream.add(temporal);
+			this.reset();
+		}
+	}
+	private void reset() {
+		this.isBC = false;
+		this.isAD = false;
+		this.containDate = false;
+		this.containTime = false;
+		this.containDot = false;
+		this.containComma = false;
+		this.containPM = false;
+		this.year = "1900";
+		this.month = null;
+		this.day = null;
+		this.hour = "00";
+		this.minute = "00";
+		this.second = "00";
+		this.tokenCount = 0;
 	}
 
 }
