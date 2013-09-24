@@ -42,6 +42,10 @@ public class PlayGround {
 			print(Integer.toString(o.getOcc())+"\n");
 		}
 		new PlayGround().testMerge();
+		int a1 = 10;
+		Integer ao = a1;
+		ao += 10;
+		print(ao.toString()+"\n");
 	}
 	public void testMerge()
 	{

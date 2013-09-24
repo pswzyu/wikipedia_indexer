@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
@@ -312,8 +313,67 @@ public class IndexReader {
 	 * first entry in the map.
 	 */
 	public Map<String, Integer> query(String... terms) {
-		//TODO: Implement this method (FOR A BONUS)
-		return null;
+		// HashMap< DocId, IdAndOccurance<has how many kinds of term,
+		// 	all the terms occured how many time> >
+		HashMap<Integer, IdAndOccurance > temp_re = new HashMap<Integer, IdAndOccurance>();
+		if ( field != INDEXFIELD.TERM ) // 如果不是term的话需要先转成id
+		{
+			for (int step = 0; step != terms.length; ++ step)
+			{
+				terms[step] = oth_dic.get(terms[step]);
+			}
+		}
+		// 统计tmp——re
+		for (int step = 0; step != terms.length; ++ step)
+		{
+			LinkedList<IdAndOccurance> li = idx.get(terms[step]);
+			ListIterator<IdAndOccurance> iter = li.listIterator();
+			while(iter.hasNext())
+			{
+				IdAndOccurance iao = iter.next(); // term出现的每一个doc
+				IdAndOccurance re_iao = temp_re.get(iao.id); // 在tmp中找有没有这个doc
+				if (re_iao != null) // 这个docid在之前的term遍历时添加过
+				{
+					re_iao.id += 1;
+					re_iao.occ += iao.occ;
+				}else // 这个docid在之前没出现过
+				{
+					if (step == 0) // 如果是遍历第一个query term， 那么添加did，否则直接忽略
+					{
+						temp_re.put(iao.id, new IdAndOccurance(1, iao.occ));
+					}
+				}
+			}
+		}
+		LinkedHashMap<String, Integer> re = new LinkedHashMap<String, Integer>();
+		// 从tmp中遍历， 依次找出最大的，删除出现次数不足terms.length的
+		while (!temp_re.isEmpty())
+		{
+			IdAndOccurance now_highest = null;
+			Integer highest_did = 0;
+			Set<Integer> docids = temp_re.keySet();
+			Iterator<Integer> iter = docids.iterator();
+			while (iter.hasNext())
+			{
+				Integer did = iter.next();
+				IdAndOccurance toto = temp_re.get(did);
+				if (toto.id < terms.length) // 不是每个term都出现在这个did里了
+				{
+					temp_re.remove(did);
+					continue;
+				}
+				if (toto.occ >= now_highest.occ)
+				{
+					now_highest = toto;
+					highest_did = did;
+				}
+			}
+			if (now_highest != null)
+			{
+				re.put(doc_dic.get(Integer.toString(highest_did)), now_highest.occ);
+			}
+		}
+		return re;
 	}
 	/*
 	 * pswzyu：获取读取文件的文件名， 如果是term的话需要传入part， 如果不是则传入0
