@@ -63,8 +63,8 @@ public class Parser {
 			File f = new File(filename);
 			if (!f.exists()) {
 					return;
-				}
 			}
+		}
 		SAXParser sp = null;
 		Inn_MyHandler handler = null;
 		try
@@ -81,13 +81,6 @@ public class Parser {
 		{
 			e.printStackTrace();
 		}
-		
-		if (handler != null)
-		{
-	        
-		}
-
-
 	}
 	class Inn_MyHandler extends DefaultHandler
 	{
@@ -102,12 +95,12 @@ public class Parser {
 		// 当栈用， 记录当前节点的path
 		LinkedList<String> element_stack;
 		
-		ConcurrentLinkedQueue<WikipediaDocument> queue;
+		Collection<WikipediaDocument> queue;
 		Parser parser;
 		
 		public Inn_MyHandler(Collection<WikipediaDocument> docs, Parser p_parser)
 		{
-			queue = (ConcurrentLinkedQueue<WikipediaDocument>) docs;
+			queue = docs;
 			parser = p_parser;
 			element_stack = new LinkedList<String>();
 		}
