@@ -10,8 +10,6 @@ public class DatesDefault implements TokenizerRule {
 			isAD = false,
 			containDate = false,
 			containTime = false,
-			containDot = false,
-			containComma = false,
 			containPM = false;
 	private String year = "1900",
 			month = null,
@@ -68,23 +66,17 @@ public class DatesDefault implements TokenizerRule {
 			}
 			break;
 			case "am.":
-			case "pm.": containDot = true;
+			case "pm.":
 			case "am":
 			case "pm": tokenCount += 1; containTime = true; break;
-			case "bc.": containDot = true;
+			case "bc.":
 			case "bc": tokenCount +=1; isBC = true; containDate = true; break;
-			case "ad.": containDot = true;
+			case "ad.":
 			case "ad": tokenCount +=1; isAD = true; break;
 			default:
-				if (token.matches("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.]*")) {
+				if (token.matches("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.,]*")) {
 					tokenCount += 1;
 					containTime = true;
-					if (token.contains(",")) {
-						containComma = true;
-					}
-					if (token.contains(".")) {
-						containDot = true;
-					}
 					int indexOfColon = token.indexOf(':');
 					int lastIndexOfColon = token.lastIndexOf(':');
 					hour = token.substring(0, indexOfColon);
@@ -97,12 +89,6 @@ public class DatesDefault implements TokenizerRule {
 					}
 				} else if (token.matches("\\d{1,4}[,\\.]*")) {
 					tokenCount += 1;
-					if (token.contains(",")) {
-						containComma = true;
-					}
-					if (token.contains(".")) {
-						containDot = true;
-					}
 					token = token.replaceAll("[,\\.]", "");
 					int length = token.length();
 					containDate = true;
@@ -140,6 +126,9 @@ public class DatesDefault implements TokenizerRule {
 				stream.previous();
 			}
 			String temporal = "";
+			String retainString = stream.previous();
+			stream.next();
+			retainString = retainString.replaceAll("[0-9A-z:]*", "");
 			while (tokenCount > 0) {
 				tokenCount -= 1;
 				stream.previous();
@@ -171,11 +160,11 @@ public class DatesDefault implements TokenizerRule {
 				}
 				temporal += hour + ":" + minute + ":" + second;
 			}
-			if (containDot) {
-				temporal += ".";
+			System.out.println(temporal);
+			if (retainString != "" || !retainString.isEmpty()) {
+				temporal += retainString;
+				System.out.println(temporal);
 			}
-//			System.out.println(temporal);
-//			System.out.println(stream.getAllTokens());
 			stream.add(temporal);
 			this.reset();
 		}
@@ -185,8 +174,6 @@ public class DatesDefault implements TokenizerRule {
 		this.isAD = false;
 		this.containDate = false;
 		this.containTime = false;
-		this.containDot = false;
-		this.containComma = false;
 		this.containPM = false;
 		this.year = "1900";
 		this.month = null;
