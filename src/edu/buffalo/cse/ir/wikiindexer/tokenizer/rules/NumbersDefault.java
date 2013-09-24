@@ -23,6 +23,9 @@ public class NumbersDefault implements TokenizerRule {
 			if (firstIndexOfNumber == -1) {
 				continue;
 			}
+			if (token.matches("((-{0,1}\\d{8})|(\\d{2}:\\d{2}:\\d{2})|(-{0,1}\\d{8} \\d{2}:\\d{2}:\\d{2}))\\D*")) {
+				continue;
+			}
 			token = this.removeNumber(token);
 			stream.previous();
 			if (token == "" || token.isEmpty()) {

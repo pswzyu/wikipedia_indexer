@@ -102,12 +102,13 @@ public class Parser {
 		// 当栈用， 记录当前节点的path
 		LinkedList<String> element_stack;
 		
-		ConcurrentLinkedQueue<WikipediaDocument> queue;
+		Collection<WikipediaDocument> queue;
 		Parser parser;
 		
 		public Inn_MyHandler(Collection<WikipediaDocument> docs, Parser p_parser)
 		{
-			queue = (ConcurrentLinkedQueue<WikipediaDocument>) docs;
+//			queue = (ConcurrentLinkedQueue<WikipediaDocument>) docs;
+			queue = docs;
 			parser = p_parser;
 			element_stack = new LinkedList<String>();
 		}
