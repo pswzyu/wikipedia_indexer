@@ -79,9 +79,9 @@ public class TokenizerFactory {
 				// delim， stem， stopword
 				return new Tokenizer(new SentenceSpliter(), new CapitalizationAndWhitespaces(),
 						new ApostropheDefault(), new HyphenDefault(),
-						new SpecialCharsDefault(), new DatesDefault(), new NumbersDefault());
-				//		new AccentsDefault(), new DelimDefault(), new EnglishStemmer(),
-				//		new StopwordsDefault());
+						new SpecialCharsDefault(), new DatesDefault(), new NumbersDefault(),
+						new AccentsDefault(), new DelimDefault(), new EnglishStemmer(),
+						new StopwordsDefault());
 			} catch (TokenizerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
