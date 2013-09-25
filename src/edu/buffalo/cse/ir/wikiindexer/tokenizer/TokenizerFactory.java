@@ -6,7 +6,20 @@ package edu.buffalo.cse.ir.wikiindexer.tokenizer;
 import java.util.Properties;
 
 import edu.buffalo.cse.ir.wikiindexer.indexer.INDEXFIELD;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.AccentsDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.ApostropheDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.CapitalizationAndWhitespaces;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.CapitalizationDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.DatesDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.DelimDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.EnglishStemmer;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.HyphenDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.NumbersDefault;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.PunctuationDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.SentenceSpliter;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.SpecialCharsDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.StopwordsDefault;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.WhitespaceDefault;
 
 /**
  * Factory class to instantiate a Tokenizer instance
@@ -64,7 +77,11 @@ public class TokenizerFactory {
 			try {
 				// 分句，大小写，空白，apostrophe， hyphen， special char，dates，num，accent
 				// delim， stem， stopword
-				return new Tokenizer(new PunctuationDefault());
+				return new Tokenizer(new SentenceSpliter(), new CapitalizationAndWhitespaces(),
+						new ApostropheDefault(), new HyphenDefault(),
+						new SpecialCharsDefault(), new DatesDefault(), new NumbersDefault());
+				//		new AccentsDefault(), new DelimDefault(), new EnglishStemmer(),
+				//		new StopwordsDefault());
 			} catch (TokenizerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -72,7 +89,7 @@ public class TokenizerFactory {
 		}else if (field == INDEXFIELD.AUTHOR)
 		{
 			try {
-				return new Tokenizer(new PunctuationDefault());
+				return new Tokenizer(new WhitespaceDefault(), new CapitalizationDefault());
 			} catch (TokenizerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -81,7 +98,7 @@ public class TokenizerFactory {
 		else if (field == INDEXFIELD.CATEGORY)
 		{
 			try {
-				return new Tokenizer(new PunctuationDefault());
+				return new Tokenizer(new WhitespaceDefault(), new CapitalizationDefault());
 			} catch (TokenizerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

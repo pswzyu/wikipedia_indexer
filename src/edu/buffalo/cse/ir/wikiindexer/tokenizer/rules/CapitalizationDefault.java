@@ -6,7 +6,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 import java.lang.Character;
 
-@RuleClass(className = RULENAMES.PUNCTUATION)
+@RuleClass(className = RULENAMES.CAPITALIZATION)
 
 public class CapitalizationDefault implements TokenizerRule {
 

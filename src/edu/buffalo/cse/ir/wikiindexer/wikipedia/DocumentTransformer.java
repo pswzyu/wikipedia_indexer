@@ -94,6 +94,7 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		
 		// Lets ROCK!
 		tz_map.get(INDEXFIELD.TERM).tokenize(ts_term);
+		System.exit(1);
 		tz_map.get(INDEXFIELD.AUTHOR).tokenize(ts_author);
 		tz_map.get(INDEXFIELD.CATEGORY).tokenize(ts_catagory);
 		tz_map.get(INDEXFIELD.LINK).tokenize(ts_link);

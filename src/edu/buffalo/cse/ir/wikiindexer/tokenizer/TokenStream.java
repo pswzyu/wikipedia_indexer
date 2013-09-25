@@ -252,15 +252,6 @@ public class TokenStream implements Iterator<String>{
 		main_iter.previous();
 		main_iter.set(tmp);
 		return true;
-		// 如果根本没有上一个元素， 返回失败
-//		if (!main_iter.hasPrevious())
-//			return false;
-//		String tmp = main_iter.previous(); // 先获取上一个元素
-//		main_iter.next(); // 回到刚才的位置
-//		main_iter.remove(); // 删除刚才的元素
-//		tmp += " " + main_iter.next(); // 获取下一元素
-//		main_iter.set(tmp); // 把下一个元素替换为链接串
-//		return  true;
 	}
 	/*
 	 * Merge With Previous for Human use
@@ -444,5 +435,17 @@ public class TokenStream implements Iterator<String>{
 		{
 			next();
 		}
+	}
+	/*
+	 * pswzyu: 打印出当前所有的元素
+	 */
+	public void print()
+	{
+		ListIterator<String> iter = token_pool.listIterator();
+		while(iter.hasNext())
+		{
+			System.out.print("{[("+iter.next()+")]},");
+		}
+		System.out.print("\n");
 	}
 }

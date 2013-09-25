@@ -51,6 +51,7 @@ public class Runner {
 		} else {
 			if (args[0] != null && args[0].length() > 0) {
 				String filename = args[0];
+				System.out.println(filename);
 				Properties properties = loadProperties(filename);
 				if (properties == null) {
 					System.err.println("Error while loading the Properties file. Please check the messages above and try again");
@@ -110,7 +111,7 @@ public class Runner {
 		parser.parse(FileUtil.getDumpFileName(properties), queue);
 		
 		synchronized (queue) {
-			while (queue.size() < 10) {
+			while (queue.size() < 4) {
 				//do nothing till we have at least 10 elements
 				//we assume that a lead of 10 will be sufficient
 			}
@@ -120,7 +121,7 @@ public class Runner {
 	}
 
 	private static void tokenizeAndIndex(Properties properties,
-			ConcurrentLinkedQueue<WikipediaDocument> queue) {
+		ConcurrentLinkedQueue<WikipediaDocument> queue) {
 		/*
 		 * Pseudo-code:
 		 * 		1. Create a thread executor
