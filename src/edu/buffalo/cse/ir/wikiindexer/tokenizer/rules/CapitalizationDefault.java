@@ -6,7 +6,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 import java.lang.Character;
 
-@RuleClass(className = RULENAMES.CAPITALIZATION)
+@RuleClass(className = RULENAMES.PUNCTUATION)
 
 public class CapitalizationDefault implements TokenizerRule {
 
@@ -30,10 +30,19 @@ public class CapitalizationDefault implements TokenizerRule {
 	}
 	
 	private String getLowerCase (String s) {
-		if (s.matches("[A-Z]*")) {
-			return s;
+		int countOfUpChar = 0;
+		for (char c:s.toCharArray()) {
+			if (c >= 'A' && c <= 'Z') {
+				countOfUpChar += 1;
+			}
 		}
-		return s.toLowerCase();
+		if (countOfUpChar == 0) {
+			return s;
+		} else if (countOfUpChar == 1 && (s.charAt(0) >= 'A' && s.charAt(0) <= 'Z')) {
+			return s.toLowerCase();
+		}
+		System.out.println(s);
+		return s;
 	}
 
 }

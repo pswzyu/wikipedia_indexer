@@ -2,15 +2,11 @@
  * 
  */
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
-import edu.buffalo.cse.ir.wikiindexer.parsers.Parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.*;
 
-import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument.Section;
 
 /**
  * @author nikhillo
@@ -49,7 +45,11 @@ public class WikipediaParser {
 		String tmp = "";
 		while(m.find())
 		{
-			if(!tmp.equals(""))
+			if (tmpAnchor == 0) {
+				tmpAnchor = m.start();
+				tmpMap.put("Default", text.substring(0, tmpAnchor));
+			}
+			if(tmp != "" || !tmp.isEmpty())
 			{
 				tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor, m.start()));
 			}
@@ -57,7 +57,7 @@ public class WikipediaParser {
 			tmpAnchor = m.end();
 		}
 		
-		if(!tmp.equals(""))
+		if(tmp != "" || !tmp.isEmpty())
 		{
 			tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
 		}
@@ -65,6 +65,26 @@ public class WikipediaParser {
 		{
 			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
 		}
+//		int tmpAnchor = 0;
+//		String tmp = "";
+//		while(m.find())
+//		{
+//			if(!tmp.equals(""))
+//			{
+//				tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor, m.start()));
+//			}
+//			tmp = m.group();
+//			tmpAnchor = m.end();
+//		}
+//		
+//		if(!tmp.equals(""))
+//		{
+//			tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
+//		}
+//		else
+//		{
+//			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
+//		}
 		return tmpMap;
 	}
 	
@@ -78,7 +98,7 @@ public class WikipediaParser {
 	public static String parseSectionTitle(String titleStr) {
 		if(titleStr==null)
 			return null;
-		titleStr = titleStr.replaceAll("(^|(?<=\n))(={1,6})\\s([^=]+?)\\s\\2", "$3");
+		titleStr = titleStr.replaceAll("(^|(?<=\n))(={1,6})\\s*([^=]+?)\\s*\\2", "$3");
 		return titleStr;
 	}
 	
@@ -154,7 +174,7 @@ public class WikipediaParser {
 	public static String parseTemplates(String text) {
 		if(text == null)
 			return null;
-		text = text.replaceAll("\\{{2}([^\\{\\}]*?)\\}{2}","");
+		text = text.replaceAll("(?s)\\{{2}([^\\{\\}]*?)\\}{2}","");
 		return text;
 	}
 	
