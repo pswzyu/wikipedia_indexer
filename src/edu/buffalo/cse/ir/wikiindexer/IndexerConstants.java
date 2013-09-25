@@ -54,5 +54,6 @@ public interface IndexerConstants {
 	public static final String ACCENTRULE = "accnt.rule";
 	public static final String CAPITALIZATIONRULE = "captl.rule";
 	public static final String NUMBERSRULE = "nmbrs.rule";
+	public static final String STEMMERRULE = "stem.rule";
 	
 }
