@@ -65,7 +65,11 @@ public class Tokenizer {
 	 */
 	public void tokenize(TokenStream stream) throws TokenizerException {
 		for (TokenizerRule rule : tRules) {
+			System.out.println(rule.getClass().getName());
+			stream.print();
 			rule.apply(stream);
+			System.out.println(rule.getClass().getName()+"end:");
+			stream.print();
 		}
 	}
 	

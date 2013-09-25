@@ -100,8 +100,7 @@ public abstract class Dictionary implements Writeable {
 	 * @return true if found, false otherwise
 	 */
 	public boolean exists(String value) {
-		items.containsKey(value);
-		return false;
+		return items.containsKey(value);
 	}
 	
 	/**
