@@ -29,7 +29,6 @@ public class Partitioner {
 	 * @return The assigned partition number for the given term
 	 */
 	public static int getPartitionNumber (String term) {
-		System.out.println("getPartitionNumber:"+term);
 		char start = term.charAt(0);
 		if ("tTaAiIvVjJqQ".indexOf(start) != -1)
 			return 0;

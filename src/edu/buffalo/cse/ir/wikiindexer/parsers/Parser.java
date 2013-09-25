@@ -182,8 +182,8 @@ public class Parser {
 					String[] links = WikipediaParser.parseLinks(text);
 					for (int step = 1; step != links.length; ++step)
 					{
-						temp_d.publicAddLink(links[step]);
-						System.out.print(":LINK:"+links[step]);
+						if (links[step].equals(""))
+							temp_d.publicAddLink(links[step]);
 					}
 					text = links[0]; // 第一个元素是处理好的text
 					

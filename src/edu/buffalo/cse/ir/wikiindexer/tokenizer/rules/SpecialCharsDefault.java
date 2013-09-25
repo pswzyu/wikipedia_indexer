@@ -9,7 +9,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 @RuleClass(className = RULENAMES.SPECIALCHARS)
 public class SpecialCharsDefault implements TokenizerRule {
-	private final static Character[] removedChar = {'~', '(', ')', '#', '$', '%', '&', ':', ';', '_', '/', '\\', '@', '=', '^', '*', '+', '-', '<', '|', '>' };
+	private final static Character[] removedChar = {'~', '(', ')', '#', '$', '%', '&', ':', ';', '_', '/', '\\', '@', '=', '^', '*', '+', '-', '<', '|', '>', '"' };
 	private final static HashSet<Character> removedCharSet = new HashSet<Character>(Arrays.asList(removedChar));
 	
 	public SpecialCharsDefault() {
