@@ -131,6 +131,14 @@ public class WikipediaDocument {
 	}
 	
 	/**
+	 * Method to bulk add categories to the list of categories classifying this document
+	 * @param categories: The collection of categories to be added
+	 */
+	public void publicAddCategories(Collection<String> categories) {
+		this.categories.addAll(categories);
+	}
+	
+	/**
 	 * Method to add a given language to link mapping to the list of language mappings for this document
 	 * @param langCode: The language code that references the link
 	 * @param langLink: The link to be added

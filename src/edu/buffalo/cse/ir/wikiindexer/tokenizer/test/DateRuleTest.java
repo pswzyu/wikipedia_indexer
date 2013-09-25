@@ -74,15 +74,15 @@ public class DateRuleTest extends TokenizerRuleTest {
 									"actress." },
 							runtest("Vidya", "Balan", "born", "1", "January",
 									"1978", "is", "an", "Indian", "actress."));
-//MARK					assertArrayEquals(
-//							new Object[] { "President", "Franklin", "D.",
-//									"Roosevelt", "to", "proclaim", "19411207,",
-//									"'a", "date", "which", "will", "live",
-//									"in", "infamy'" },
-//							runtest("President", "Franklin", "D.", "Roosevelt",
-//									"to", "proclaim", "December", "7,",
-//									"1941,", "'a", "date", "which", "will",
-//									"live", "in", "infamy'"));
+				assertArrayEquals(
+							new Object[] { "President", "Franklin", "D.",
+									"Roosevelt", "to", "proclaim", "19411207,",
+									"'a", "date", "which", "will", "live",
+									"in", "infamy'" },
+							runtest("President", "Franklin", "D.", "Roosevelt",
+									"to", "proclaim", "December", "7,",
+									"1941,", "'a", "date", "which", "will",
+									"live", "in", "infamy'"));
 					assertArrayEquals(
 							new Object[] { "The", "Academy", "operated",
 									"until", "it", "was", "destroyed", "by",
@@ -140,13 +140,22 @@ public class DateRuleTest extends TokenizerRuleTest {
 									"leap", "years)", "in", "the", "Gregorian",
 									"calendar."));
 					assertArrayEquals(
-							new Object[] { "Apple", "is", "one", "of", "the",
-									"world's", "most", "valuable", "publicly",
-									"traded", "companies", "in",
-									"20110101�20120101." },
-							runtest("Apple", "is", "one", "of", "the",
-									"world's", "most", "valuable", "publicly",
-									"traded", "companies", "in", "2011�12."));
+							new Object[] { "19000411", "is", "11:11:00", "12:12:00",
+									"day", "of", "the", "year", "(102nd", "in",
+									"leap", "years)", "in", "the", "Gregorian",
+									"calendar." },
+							runtest("April", "11", "is", "11:11", "12:12", "day",
+									"of", "the", "year", "(102nd", "in",
+									"leap", "years)", "in", "the", "Gregorian",
+									"calendar."));
+//					assertArrayEquals(
+//							new Object[] { "Apple", "is", "one", "of", "the",
+//									"world's", "most", "valuable", "publicly",
+//									"traded", "companies", "in",
+//									"20110101�20120101." },
+//							runtest("Apple", "is", "one", "of", "the",
+//									"world's", "most", "valuable", "publicly",
+//									"traded", "companies", "in", "2011�12."));
 				}
 
 			} catch (TokenizerException e) {

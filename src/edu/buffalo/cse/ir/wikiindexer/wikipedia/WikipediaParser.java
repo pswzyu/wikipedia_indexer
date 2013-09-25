@@ -4,8 +4,11 @@
 package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.regex.*;
+
+import com.sun.org.glassfish.external.statistics.Statistic;
 
 
 /**
@@ -37,9 +40,10 @@ public class WikipediaParser {
 	 * 传入的text需要预先处理好其他的Markup标记；
 	 * 但最终每个Section的部分还是需要去除一下Section标记，因为subsection的存在。
 	 */
-	public static HashMap<String, String> splitSection(String text)
+	public static ArrayList<String> splitSection(String text)
 	{
 		HashMap<String, String> tmpMap = new HashMap<String, String>();
+		ArrayList<String> array = new ArrayList<String>();
 		Matcher m = Pattern.compile("(^|(?<=\n))(={2,6})[^=]+?\\2").matcher(text);
 		int tmpAnchor = 0;
 		String tmp = "";
@@ -47,11 +51,15 @@ public class WikipediaParser {
 		{
 			if (tmpAnchor == 0) {
 				tmpAnchor = m.start();
-				tmpMap.put("Default", text.substring(0, tmpAnchor));
+				array.add("Default");
+				array.add(text.substring(0, tmpAnchor));
+//				tmpMap.put("Default", text.substring(0, tmpAnchor));
 			}
 			if(tmp != "" || !tmp.isEmpty())
 			{
-				tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor, m.start()));
+				array.add(WikipediaParser.parseSectionTitle(tmp));
+				array.add(text.substring(tmpAnchor, m.start()));
+//				tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor, m.start()));
 			}
 			tmp = m.group();
 			tmpAnchor = m.end();
@@ -59,11 +67,15 @@ public class WikipediaParser {
 		
 		if(tmp != "" || !tmp.isEmpty())
 		{
-			tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
+			array.add(WikipediaParser.parseSectionTitle(tmp));
+			array.add(text.substring(tmpAnchor));
+//			tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
 		}
 		else
 		{
-			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
+			array.add("Default");
+			array.add(WikipediaParser.parseSectionTitle(text));
+//			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
 		}
 //		int tmpAnchor = 0;
 //		String tmp = "";
@@ -85,7 +97,7 @@ public class WikipediaParser {
 //		{
 //			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
 //		}
-		return tmpMap;
+		return array;
 	}
 	
 	/* TODO */
@@ -149,6 +161,19 @@ public class WikipediaParser {
 		return text;
 	}
 	
+	
+	public static Collection<String> parseCategories(String text) {
+		ArrayList<String> result = new ArrayList<String>();
+		Matcher m = Pattern.compile("\\[\\[Category:[^\\[\\]]+?\\]\\]").matcher(text);
+		while (m.find()) {
+			String tmp = m.group();
+			tmp = tmp.substring(11);
+			tmp = tmp.replaceAll("[\\|\\s]*\\]\\]$", "");
+			result.add(tmp);
+		}
+//		[[Category:People from Glasgow| ]]
+		return result;
+	}
 	/* TODO */
 	/**
 	 * Method to parse *any* HTML style tags like: <xyz ...> </xyz>
@@ -174,9 +199,9 @@ public class WikipediaParser {
 	public static String parseTemplates(String text) {
 		if(text == null)
 			return null;
-		System.out.println(text);
-		text = text.replaceAll("(?s)\\{{2}.*\\}{2}","");
-		System.out.println(text);
+		while (text.matches("(?s).*\\{{2}.*\\}{2}.*")) {
+			text = text.replaceAll("(?s)\\{{2}[^\\{\\}]*?\\}{2}","");
+		}
 		return text;
 	}
 	

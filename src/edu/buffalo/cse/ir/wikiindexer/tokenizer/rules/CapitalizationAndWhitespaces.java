@@ -12,6 +12,9 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 
 	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
+		if (stream == null){
+			return;
+		}
 		stream.reset();
 		// 遍历stream中的每一个元素
 		while (stream.hasNext())

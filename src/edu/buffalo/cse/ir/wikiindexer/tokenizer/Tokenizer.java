@@ -65,17 +65,17 @@ public class Tokenizer {
 	 */
 	public void tokenize(TokenStream stream) throws TokenizerException {
 		for (TokenizerRule rule : tRules) {
-//			if (rule.getClass().getName().contains("PunctuationDefault" ) )
-//			{
+//			if (rule.getClass().getName().contains("SpecialCharsDefault" ) )
+			{
 			System.out.println(rule.getClass().getName() + "--in:");
 				stream.print();
-			//}
+			}
 			rule.apply(stream);
-//			if (rule.getClass().getName().contains("PunctuationDefault" ) )
-//			{
+//			if (rule.getClass().getName().contains("SpecialCharsDefault" ) )
+			{
 			System.out.println(rule.getClass().getName() + "--out:");
 				stream.print();
-			//}
+			}
 		}
 	}
 	

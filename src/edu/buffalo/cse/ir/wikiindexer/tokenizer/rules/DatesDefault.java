@@ -11,12 +11,12 @@ public class DatesDefault implements TokenizerRule {
 			containDate = false,
 			containTime = false,
 			containPM = false;
-	private String year = "1900",
+	private String year = null,
 			month = null,
 			day = null,
-			hour = "00",
-			minute = "00",
-			second = "00";
+			hour = null,
+			minute = null,
+			second = null;
 	private int tokenCount = 0;
 	
 	public void apply(TokenStream stream) throws TokenizerException {
@@ -29,28 +29,100 @@ public class DatesDefault implements TokenizerRule {
 			token = token.toLowerCase();
 			switch (token) {
 			case "jan":
-			case "january": tokenCount += 1; containDate = true; month = "01"; break;
+			case "january":
+				if(this.setMonth("01")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "feb":
-			case "february": tokenCount += 1; month = "02"; break;
+			case "february":
+				if(this.setMonth("02")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "mar":
-			case "march": tokenCount += 1; month = "03"; break;
+			case "march":
+				if(this.setMonth("03")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "apr":
-			case "april": tokenCount += 1; month = "04"; break;
-			case "may": tokenCount += 1; month = "05"; break;
+			case "april":
+				if(this.setMonth("04")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
+			case "may":
+				if(this.setMonth("05")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "jun":
-			case "june": tokenCount += 1; month = "06"; break;
+			case "june":
+				if(this.setMonth("06")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "jul":
-			case "july": tokenCount += 1; month = "07"; break;
+			case "july":
+				if(this.setMonth("07")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "aug":
-			case "august": tokenCount += 1; month = "08"; break;
+			case "august":
+				if(this.setMonth("08")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "sep":
-			case "september": tokenCount += 1; month = "09"; break;
+			case "september":
+				if(this.setMonth("09")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "oct":
-			case "october": tokenCount += 1; month = "10"; break;
+			case "october":
+				if(this.setMonth("10")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "nov":
-			case "november": tokenCount += 1; month = "11"; break;
+			case "november":
+				if(this.setMonth("11")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "dec":
-			case "december": tokenCount += 1; month = "12"; break;
+			case "december":
+				if(this.setMonth("12")) {
+					tokenCount += 1; break;
+				} else {
+					this.processTemporal(stream);
+					break;
+				}
 			case "monday":
 			case "tuesday":
 			case "wednesday":
@@ -74,8 +146,12 @@ public class DatesDefault implements TokenizerRule {
 			case "ad": tokenCount +=1; isAD = true; break;
 			default:
 				if (token.matches("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.,]*")) {
-					tokenCount += 1;
+					if (containTime) {
+						this.processTemporal(stream);
+						break;
+					}
 					containTime = true;
+					tokenCount += 1;
 					int indexOfColon = token.indexOf(':');
 					int lastIndexOfColon = token.lastIndexOf(':');
 					hour = token.substring(0, indexOfColon);
@@ -87,24 +163,42 @@ public class DatesDefault implements TokenizerRule {
 						containPM = true;
 					}
 				} else if (token.matches("\\d{1,4}[,\\.]*")) {
+					containDate = true;
 					tokenCount += 1;
 					token = token.replaceAll("[,\\.]", "");
 					int length = token.length();
-					containDate = true;
 					if (length == 4) {
-						year = token;
+						if (!this.setYear(token)) {
+							tokenCount -= 1;
+							this.processTemporal(stream);
+							break;
+						}
 					} else if (length == 3) {
-						year = "0" + token;
+						if (!this.setYear("0" + token)) {
+							tokenCount -= 1;
+							this.processTemporal(stream);
+							break;
+						}
 					} else if (length == 2) {
-						if (isAD || isBC || (Integer.valueOf(token) > 31)) {
-							if (year == "1900") {
-								year = "00" + token;
+						if ((Integer.valueOf(token) > 31)) {
+							if (!this.setYear("00" + token)) {
+								tokenCount -= 1;
+								this.processTemporal(stream);
+								break;
 							}
 						} else {
-							day = token;
+							if (!this.setDay(token)) {
+								tokenCount -= 1;
+								this.processTemporal(stream);
+								break;
+							}
 						}
 					} else {
-						day = "0" + token;
+						if (!this.setDay("0" + token)) {
+							tokenCount -= 1;
+							this.processTemporal(stream);
+							break;
+						}
 					}
 				} else {
 					this.processTemporal(stream);
@@ -113,6 +207,36 @@ public class DatesDefault implements TokenizerRule {
 		}
 		this.processTemporal(stream, true);
 		stream.reset();
+	}
+	
+	private boolean setMonth(String s) {
+		if (this.month == null) {
+			this.month = s;
+			this.containDate = true;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean setYear(String s) {
+		if (this.year == null) {
+			this.year = s;
+			this.containDate = true;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean setDay(String s) {
+		if (this.day == null) {
+			this.day = s;
+			this.containDate = true;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private void processTemporal(TokenStream stream) {
@@ -124,6 +248,10 @@ public class DatesDefault implements TokenizerRule {
 			if (!lastToken) {
 				stream.previous();
 			}
+			if (!containTime && year == null && month == null) {
+				this.reset();
+				return;
+			}
 			String temporal = "";
 			String retainString = stream.previous();
 			stream.next();
@@ -134,6 +262,7 @@ public class DatesDefault implements TokenizerRule {
 				stream.remove();
 			}
 			if (containDate) {
+				year = year == null ? "1900" : year;
 				if (month == null) {
 					month = "01";
 				}
@@ -146,6 +275,9 @@ public class DatesDefault implements TokenizerRule {
 				temporal += year + month + day;
 			}
 			if (containTime) {
+				hour = hour == null ? "00" : hour;
+				minute = minute == null ? "00" : minute;
+				second = second == null ? "00" : second;
 				if (temporal.length() > 2) {
 					temporal += " ";
 				}
@@ -163,6 +295,7 @@ public class DatesDefault implements TokenizerRule {
 				temporal += retainString;
 			}
 			stream.add(temporal);
+//			stream.previous();
 			this.reset();
 		}
 	}
@@ -172,12 +305,12 @@ public class DatesDefault implements TokenizerRule {
 		this.containDate = false;
 		this.containTime = false;
 		this.containPM = false;
-		this.year = "1900";
+		this.year = null;
 		this.month = null;
 		this.day = null;
-		this.hour = "00";
-		this.minute = "00";
-		this.second = "00";
+		this.hour = null;
+		this.minute = null;
+		this.second = null;
 		this.tokenCount = 0;
 	}
 

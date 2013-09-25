@@ -3,6 +3,7 @@
  */
 package edu.buffalo.cse.ir.wikiindexer.parsers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -174,10 +175,14 @@ public class Parser {
 					WikipediaDocument temp_d = new WikipediaDocument(idFromXml, timestampFromXml,
 							authorFromXml, ttl);
 					//new WikipediaParser(temp_d, text, parser, queue);
+					
 					text = WikipediaParser.parseListItem(text);
 					text = WikipediaParser.parseTextFormatting(text);
 					text = WikipediaParser.parseTagFormatting(text);
 					text = WikipediaParser.parseTemplates(text);
+					
+					
+					temp_d.publicAddCategories(WikipediaParser.parseCategories(text));
 					// 解析链接并将得到的链接加入到link字段中
 					String[] links = WikipediaParser.parseLinks(text);
 					for (int step = 1; step != links.length; ++step)
@@ -187,13 +192,18 @@ public class Parser {
 					}
 					text = links[0]; // 第一个元素是处理好的text
 					
-					HashMap<String, String> sections = WikipediaParser.splitSection(text);
-					Iterator<String> iter = sections.keySet().iterator();
-					while (iter.hasNext()) {
-					    String key = (String)iter.next();
-					    String val = (String)sections.get(key);
-					    temp_d.publicAddSection(key, val);
+					ArrayList<String> sections = WikipediaParser.splitSection(text);
+					for (int i = 0; i < sections.size(); i++) {
+						temp_d.publicAddSection(sections.get(i), sections.get(i + 1));
+						i++;
 					}
+//					HashMap<String, String> sections = WikipediaParser.splitSection(text);
+//					Iterator<String> iter = sections.keySet().iterator();
+//					while (iter.hasNext()) {
+//					    String key = (String)iter.next();
+//					    String val = (String)sections.get(key);
+//					    temp_d.publicAddSection(key, val);
+//					}
 					
 					
 					queue.add(temp_d);

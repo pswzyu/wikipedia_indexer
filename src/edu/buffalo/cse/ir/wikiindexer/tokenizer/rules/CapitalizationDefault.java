@@ -12,6 +12,9 @@ public class CapitalizationDefault implements TokenizerRule {
 
 	@Override
 	public void apply(TokenStream stream) throws TokenizerException {
+		if (stream == null){
+			return;
+		}
 		stream.reset();
 		boolean isFirstWord = true;
 		// 遍历stream中的每一个元素
