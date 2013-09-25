@@ -22,7 +22,7 @@ public interface IndexerConstants {
 	}
 	
 	/* Total number of properties */
-	public static final int NUM_PROPERTIES = 18;
+	public static final int NUM_PROPERTIES = 15;
 	
 	/* Root directory */
 	@RequiredConstant
@@ -54,5 +54,6 @@ public interface IndexerConstants {
 	public static final String ACCENTRULE = "accnt.rule";
 	public static final String CAPITALIZATIONRULE = "captl.rule";
 	public static final String NUMBERSRULE = "nmbrs.rule";
+	public static final String STEMMERRULE = "stem.rule";
 	
 }
