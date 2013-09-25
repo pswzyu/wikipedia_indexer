@@ -29,7 +29,7 @@ public class DatesDefault implements TokenizerRule {
 			token = token.toLowerCase();
 			switch (token) {
 			case "jan":
-			case "january": tokenCount += 1; containDate = true; System.out.println("month= " + token); month = "01"; break;
+			case "january": tokenCount += 1; containDate = true; month = "01"; break;
 			case "feb":
 			case "february": tokenCount += 1; month = "02"; break;
 			case "mar":
@@ -61,7 +61,6 @@ public class DatesDefault implements TokenizerRule {
 			case "sunday,":
 			case "utc": tokenCount += 1; break;
 			case "on": if(tokenCount > 0) {
-				System.out.println("ON");
 				tokenCount += 1;
 			}
 			break;
@@ -160,10 +159,8 @@ public class DatesDefault implements TokenizerRule {
 				}
 				temporal += hour + ":" + minute + ":" + second;
 			}
-			//System.out.println(temporal);
 			if (retainString != "" || !retainString.isEmpty()) {
 				temporal += retainString;
-				//System.out.println(temporal);
 			}
 			stream.add(temporal);
 			this.reset();
