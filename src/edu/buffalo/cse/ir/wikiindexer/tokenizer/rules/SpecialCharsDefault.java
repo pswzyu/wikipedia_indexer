@@ -50,7 +50,7 @@ public class SpecialCharsDefault implements TokenizerRule {
 	
 	private boolean containSC(String s) {
 		for (char c : s.toCharArray()) {
-			if(this.removedCharSet.contains(c)) {
+			if(this.removedCharSet.contains((Character)c)) {
 				return true;
 			}
 		}

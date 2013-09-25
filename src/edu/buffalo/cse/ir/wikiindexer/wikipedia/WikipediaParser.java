@@ -174,7 +174,9 @@ public class WikipediaParser {
 	public static String parseTemplates(String text) {
 		if(text == null)
 			return null;
-		text = text.replaceAll("(?s)\\{{2}([^\\{\\}]*?)\\}{2}","");
+		System.out.println(text);
+		text = text.replaceAll("(?s)\\{{2}.*\\}{2}","");
+		System.out.println(text);
 		return text;
 	}
 	
