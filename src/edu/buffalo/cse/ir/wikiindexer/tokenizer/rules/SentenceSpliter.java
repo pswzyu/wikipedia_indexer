@@ -38,6 +38,8 @@ public class SentenceSpliter implements TokenizerRule {
 					}
 				}
 			}
+			stream.add( removeRedundent(
+					token.substring(last_cut_point, token.length())   )   );
 			// \for
 			stream.remove();
 		}

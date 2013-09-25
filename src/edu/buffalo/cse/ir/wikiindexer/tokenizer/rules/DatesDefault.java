@@ -160,10 +160,10 @@ public class DatesDefault implements TokenizerRule {
 				}
 				temporal += hour + ":" + minute + ":" + second;
 			}
-			System.out.println(temporal);
+			//System.out.println(temporal);
 			if (retainString != "" || !retainString.isEmpty()) {
 				temporal += retainString;
-				System.out.println(temporal);
+				//System.out.println(temporal);
 			}
 			stream.add(temporal);
 			this.reset();
