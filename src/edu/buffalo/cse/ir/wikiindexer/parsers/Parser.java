@@ -120,8 +120,6 @@ public class Parser {
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
-			System.out.print(qName);
-			printList(element_stack);
 			// 将元素栈的最后一个元素弹出
 			// 此时元素栈最后一个元素是当前元素的父节点
 			element_stack.removeLast();
@@ -185,11 +183,12 @@ public class Parser {
 					for (int step = 1; step != links.length; ++step)
 					{
 						temp_d.publicAddLink(links[step]);
+						System.out.print(":LINK:"+links[step]);
 					}
 					text = links[0]; // 第一个元素是处理好的text
 					
 					HashMap<String, String> sections = WikipediaParser.splitSection(text);
-					Iterator iter = sections.keySet().iterator();
+					Iterator<String> iter = sections.keySet().iterator();
 					while (iter.hasNext()) {
 					    String key = (String)iter.next();
 					    String val = (String)sections.get(key);

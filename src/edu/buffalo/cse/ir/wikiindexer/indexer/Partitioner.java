@@ -18,7 +18,7 @@ public class Partitioner {
 	 * @return: Total number of partitions
 	 */
 	public static int getNumPartitions() {
-		return 4;
+		return 5;
 	}
 	
 	/**
@@ -31,14 +31,15 @@ public class Partitioner {
 	public static int getPartitionNumber (String term) {
 		System.out.println("getPartitionNumber:"+term);
 		char start = term.charAt(0);
-		if ("taivjq".indexOf(start) != -1)
+		if ("tTaAiIvVjJqQ".indexOf(start) != -1)
 			return 0;
-		if ("sowyuk".indexOf(start) != -1)
+		else if ("sSoOwWyYuUkK".indexOf(start) != -1)
 			return 1;
-		if ("hbcegnx".indexOf(start) != -1)
+		else if ("hHbBcCeEgGnNxX".indexOf(start) != -1)
 			return 2;
-		if ("mfpdrlz".indexOf(start) != -1)
+		else if ("mMfFpPdDrRlLzZ".indexOf(start) != -1)
 			return 3;
-		return -1;
+		else
+			return 4;
 	}
 }
