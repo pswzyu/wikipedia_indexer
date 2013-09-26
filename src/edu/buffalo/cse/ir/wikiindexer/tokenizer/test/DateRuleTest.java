@@ -23,12 +23,10 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 @RunWith(Parameterized.class)
 public class DateRuleTest extends TokenizerRuleTest {
 
-//	public DateRuleTest(Properties props, String constantName) {
-//		super(props, IndexerConstants.DATERULE);
-//	}
 	public DateRuleTest(Properties props) {
 		super(props, IndexerConstants.DATERULE);
 	}
+
 	@Test
 	public void testRule() {
 		if (rule == null) {
@@ -65,8 +63,8 @@ public class DateRuleTest extends TokenizerRuleTest {
 							new Object[] { "19000411 is the 101st day of the year (102nd in leap years) in the Gregorian calendar." },
 							runtest("April 11 is the 101st day of the year (102nd in leap years) in the Gregorian calendar."));
 					assertArrayEquals(
-							new Object[] { "Apple is one of the world's most valuable publicly traded companies in 20110101ï¿½20120101." },
-							runtest("Apple is one of the world's most valuable publicly traded companies in 2011ï¿½12."));
+							new Object[] { "Apple is one of the world's most valuable publicly traded companies in 20110101Ð20120101." },
+							runtest("Apple is one of the world's most valuable publicly traded companies in 2011Ð12."));
 				} else {
 					assertArrayEquals(
 							new Object[] { "Vidya", "Balan", "born",
@@ -74,7 +72,7 @@ public class DateRuleTest extends TokenizerRuleTest {
 									"actress." },
 							runtest("Vidya", "Balan", "born", "1", "January",
 									"1978", "is", "an", "Indian", "actress."));
-				assertArrayEquals(
+					assertArrayEquals(
 							new Object[] { "President", "Franklin", "D.",
 									"Roosevelt", "to", "proclaim", "19411207,",
 									"'a", "date", "which", "will", "live",
@@ -140,22 +138,13 @@ public class DateRuleTest extends TokenizerRuleTest {
 									"leap", "years)", "in", "the", "Gregorian",
 									"calendar."));
 					assertArrayEquals(
-							new Object[] { "19000411", "is", "11:11:00", "12:12:00",
-									"day", "of", "the", "year", "(102nd", "in",
-									"leap", "years)", "in", "the", "Gregorian",
-									"calendar." },
-							runtest("April", "11", "is", "11:11", "12:12", "day",
-									"of", "the", "year", "(102nd", "in",
-									"leap", "years)", "in", "the", "Gregorian",
-									"calendar."));
-//					assertArrayEquals(
-//							new Object[] { "Apple", "is", "one", "of", "the",
-//									"world's", "most", "valuable", "publicly",
-//									"traded", "companies", "in",
-//									"20110101ï¿½20120101." },
-//							runtest("Apple", "is", "one", "of", "the",
-//									"world's", "most", "valuable", "publicly",
-//									"traded", "companies", "in", "2011ï¿½12."));
+							new Object[] { "Apple", "is", "one", "of", "the",
+									"world's", "most", "valuable", "publicly",
+									"traded", "companies", "in",
+									"20110101Ð20120101." },
+							runtest("Apple", "is", "one", "of", "the",
+									"world's", "most", "valuable", "publicly",
+									"traded", "companies", "in", "2011Ð12."));
 				}
 
 			} catch (TokenizerException e) {
