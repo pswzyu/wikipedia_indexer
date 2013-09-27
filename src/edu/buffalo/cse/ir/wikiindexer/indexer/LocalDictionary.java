@@ -47,6 +47,8 @@ public class LocalDictionary extends Dictionary {
 
 	@Override
 	protected String getWriteFilename() {
+		System.out.println("LD:"+FileUtil.getRootFilesFolder(props)+"./dics/" +
+				FileUtil.getFieldName(field)+(surfix.equals("")?"":"-")+surfix+".txt");
 		return FileUtil.getRootFilesFolder(props)+"./dics/" +
 				FileUtil.getFieldName(field)+(surfix.equals("")?"":"-")+surfix+".txt";
 	}

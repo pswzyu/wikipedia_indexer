@@ -27,7 +27,7 @@ import edu.buffalo.cse.ir.wikiindexer.FileUtil;
 public class IndexWriter implements Writeable {
 	
 	LocalDictionary dic;
-	int part_number = 0;
+	int part_number = -1;
 	boolean isFwd;
 	Properties props;
 	INDEXFIELD field;
@@ -127,7 +127,9 @@ public class IndexWriter implements Writeable {
 			find.add(new IdAndOccurance(valueId, numOccurances));
 		}else // 没有就创建
 		{
-			idx.put(key, new LinkedList<IdAndOccurance>());
+			LinkedList<IdAndOccurance> tmp = new LinkedList<IdAndOccurance>();
+			tmp.add(new IdAndOccurance(valueId, numOccurances) );
+			idx.put(key, tmp);
 		}
 		
 	}
@@ -180,6 +182,7 @@ public class IndexWriter implements Writeable {
 		        		}
 		        	}
 	        	}
+	        	str.append('\n');
 	        }
 	        bw.write(str.toString());
 	        bw.flush();
@@ -201,8 +204,10 @@ public class IndexWriter implements Writeable {
 	}
 	private String getWriteFilename()
 	{
+		System.out.println("INDEXWRITER:"+FileUtil.getRootFilesFolder(props)+"./index/" +
+				FileUtil.getFieldName(field)+(part_number!=-1?"-"+part_number:"")+".txt");
 		return FileUtil.getRootFilesFolder(props)+"./index/" +
-				FileUtil.getFieldName(field)+(part_number!=0?"-"+part_number:"")+".txt";
+				FileUtil.getFieldName(field)+(part_number!=-1?"-"+part_number:"")+".txt";
 	}
 
 }

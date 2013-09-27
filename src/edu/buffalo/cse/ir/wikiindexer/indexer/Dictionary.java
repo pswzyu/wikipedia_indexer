@@ -72,7 +72,7 @@ public abstract class Dictionary implements Writeable {
 	        while (iter.hasNext())
 	        {
 	        	String this_key = iter.next();
-	        	str.append(this_key + ":=" + items.get(this_key));
+	        	str.append(this_key + ":=" + items.get(this_key)+'\n');
 	        }
 	        bw.write(str.toString());
 	        bw.flush();
