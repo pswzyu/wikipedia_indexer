@@ -112,15 +112,26 @@ public abstract class Dictionary implements Writeable {
 	 * null if no match is found
 	 */
 	public Collection<String> query(String queryStr) {
-		//TODO: Implement this method (FOR A BONUS)
+		// TODO: Implement this method (FOR A BONUS)
 		LinkedList<String> result = new LinkedList<String>();
-		if (exists(queryStr))
-		{
-			result.add(queryStr);
+		int indexOfStar = queryStr.indexOf('*');
+		if (indexOfStar != -1) {
+			String regexString = queryStr.replaceAll("\\*", ".*");
+			Iterator<String> e = items.keySet().iterator();
+			while (e.hasNext()) {
+				String tmp = e.next();
+				if (tmp.matches(regexString)) {
+					result.add(tmp);
+				}
+			}
 			return result;
-		}else
-		{
-			return null;
+		} else {
+			if (exists(queryStr)) {
+				result.add(queryStr);
+				return result;
+			} else {
+				return null;
+			}
 		}
 	}
 	
