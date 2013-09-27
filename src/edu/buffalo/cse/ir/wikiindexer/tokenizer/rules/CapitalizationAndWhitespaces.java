@@ -29,6 +29,8 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 			// 循环遍历每一个字符
 			for (int step = 0; step != token.length()-1; ++ step)
 			{
+				if (isPunctuation(token.charAt(step))) // 如果出现标点，刷新这个flag
+					last_word_cap = false;
 				if ( inArray(token.charAt(step)) ) // 如果这个是空格， 后边的不是空格
 				{
 					char next = token.charAt(step+1);
@@ -98,6 +100,13 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 	public boolean inArray(char ch)
 	{
 		if (ch == '\t' || ch == '\n' || ch == '\f' || ch == '\r' || ch ==' ')
+			return true;
+		else
+			return false;
+	}
+	public boolean isPunctuation(char ch)
+	{
+		if (ch == ',' || ch == '.' || ch == '!' || ch == '?')
 			return true;
 		else
 			return false;
