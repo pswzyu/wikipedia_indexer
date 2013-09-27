@@ -26,7 +26,7 @@ public class SpecialCharsDefault implements TokenizerRule {
 					continue;
 				}
 				tmp = tmp.replaceAll("[~\\(\\)\\#$%&:;,_!\"\\=/\\s\\\\]", "");
-				tmp = tmp.replaceAll("^[@\\^\\*\\+\\-\\<\\|\\>\\.]", "");
+				tmp = tmp.replaceAll("^[@\\^\\*\\+\\-\\<\\|\\>\\.!]", "");
 				int length = tmp.length();
 				while (tmp.charAt(length - 1) == '.') {
 					tmp = tmp.substring(0, length - 1);
