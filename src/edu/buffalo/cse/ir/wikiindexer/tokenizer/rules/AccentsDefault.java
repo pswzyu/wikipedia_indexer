@@ -19,7 +19,7 @@ public class AccentsDefault implements TokenizerRule {
 			String token = stream.next();
 //			String tmp = Normalizer.normalize(token, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+","");
 			String tmp = Normalizer.normalize(token, Form.NFD);
-			tmp = tmp.replaceAll("[^\\p{ASCII}]", "");
+			tmp = tmp.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
 //			.replaceAll("\\p{InCombiningDiacriticalMarks}+","");
 			if(!token.equals(tmp)) {
 				stream.previous();
