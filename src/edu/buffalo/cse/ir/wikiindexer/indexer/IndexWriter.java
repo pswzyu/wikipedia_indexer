@@ -189,6 +189,7 @@ public class IndexWriter implements Writeable {
 		{
 			ex.printStackTrace();
 		}
+		dic.writeToDisk();
 	}
 
 	/* (non-Javadoc)
