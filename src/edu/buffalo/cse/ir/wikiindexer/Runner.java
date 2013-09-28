@@ -256,7 +256,7 @@ public class Runner {
 	 * @param filename: The filename from which to load Properties
 	 * @return The loaded object
 	 */
-	private static Properties loadProperties(String filename) {
+	public static Properties loadProperties(String filename) {
 
 		try {
 			Properties props = FileUtil.loadProperties(filename);

@@ -50,6 +50,7 @@ public class IndexReader {
 		this.props = props;
 		this.field = field;
 		recoverDocDic();
+		occ_freq = new HashMap<String, Integer>();
 		idx = new TreeMap<String, LinkedList<IdAndOccurance> >();
 		switch (field)
 		{
@@ -256,15 +257,19 @@ public class IndexReader {
 		{
 			search_key = oth_dic.get(key);
 		}
+		if (search_key == null)
+			return null;
 			
 		LinkedList<IdAndOccurance> li = idx.get(search_key);
+		if (li == null)
+			return null;
 		ListIterator<IdAndOccurance> iter = li.listIterator();
 		while(iter.hasNext())
 		{
 			IdAndOccurance iao = iter.next();
 			result.put(doc_dic.get(iao.id), iao.occ);
 		}
-		return null;
+		return result;
 	}
 	
 	/**

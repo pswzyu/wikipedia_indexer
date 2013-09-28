@@ -199,8 +199,12 @@ public class WikipediaParser {
 	public static String parseTemplates(String text) {
 		if(text == null)
 			return null;
+		int time = 0;
 		while (text.matches("(?s).*\\{{2}.*\\}{2}.*")) {
 			text = text.replaceAll("(?s)\\{{2}[^\\{\\}]*?\\}{2}","");
+			time++;
+			if(time > 100)
+				break;
 		}
 		return text;
 	}
