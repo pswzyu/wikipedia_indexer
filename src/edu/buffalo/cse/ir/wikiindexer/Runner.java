@@ -40,6 +40,7 @@ import edu.buffalo.cse.ir.wikiindexer.wikipedia.WikipediaDocument;
  */
 public class Runner {
 
+	private static Integer numDocs = 0;
 	/**
 	 * @param args
 	 */
@@ -134,22 +135,9 @@ public class Runner {
 		ExecutorService threadPool = Executors.newFixedThreadPool(Integer.valueOf(properties.get(IndexerConstants.NUM_TOKENIZER_THREADS).toString()));
 		CompletionService<IndexableDocument> pool = new ExecutorCompletionService<IndexableDocument>(threadPool);
 		
-		WikipediaDocument doc;
-		Map<INDEXFIELD, Tokenizer> tknizerMap;
-		int numDocs = 0;
-		while (true) {
-			doc = queue.poll();
-			
-			if (doc == null) {
+		synchronized (numDocs) {
+			while (numDocs < 5) {
 				Thread.sleep(1500);
-			} else {
-				if ("DUMMY".equals(doc.getTitle()) && "DUMMY".equals(doc.getAuthor())) {
-					break; //all done
-				} else {
-					tknizerMap = initMap(properties);
-					pool.submit(new DocumentTransformer(tknizerMap, doc));
-					numDocs++;
-				}
 			}
 		}
 		
@@ -200,13 +188,10 @@ public class Runner {
 						e.printStackTrace();
 					}
 				}
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
+				
+				prevCount = currCount;
+			}
+			
 		}
 		
 		
