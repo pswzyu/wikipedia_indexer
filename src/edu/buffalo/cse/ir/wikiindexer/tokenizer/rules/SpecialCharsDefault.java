@@ -9,7 +9,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 @RuleClass(className = RULENAMES.SPECIALCHARS)
 public class SpecialCharsDefault implements TokenizerRule {
-	private final static Character[] removedChar = {'~', ',', '(', ')', '#', '$', '%', '&', ':', ';', '_', '/', '\\', '@', '=', '^', '*', '+', '-', '–', '<', '|', '>', '"', '.', '!' };
+	private final static Character[] removedChar = {'~', ',', '(', ')', '#', '$', '%', '&', ':', ';', '_', '/', '\\', '@', '=', '^', '*', '+', '<', '|', '>', '"', '.', '!' };
 	private final static HashSet<Character> removedCharSet = new HashSet<Character>(Arrays.asList(removedChar));
 	
 	public void apply(TokenStream stream) throws TokenizerException {
@@ -26,7 +26,7 @@ public class SpecialCharsDefault implements TokenizerRule {
 					continue;
 				}
 				tmp = tmp.replaceAll("[~\\(\\)\\#$%&:;,_!\"\\=/\\s\\\\]", "");
-				tmp = tmp.replaceAll("^[@\\^\\*\\+\\-\\<\\|\\>\\.!]", "");
+				tmp = tmp.replaceAll("^[@\\^\\*\\+\\<\\|\\>\\.!]", "");
 				int length = tmp.length();
 				if (length > 1) {
 					while (tmp.charAt(length - 1) == '.') {
@@ -43,7 +43,7 @@ public class SpecialCharsDefault implements TokenizerRule {
 				if (tmp.matches("\\d{3}-\\d{4}")) {
 					stream.set(tmp);
 				} else {
-					stream.set(tmp.split("[@\\^\\*\\+\\-\\<\\|\\>]"));
+					stream.set(tmp.split("[@\\^\\*\\+\\<\\|\\>]"));
 				}
 				stream.next();
 			}

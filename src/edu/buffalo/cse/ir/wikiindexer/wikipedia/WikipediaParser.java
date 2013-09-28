@@ -200,7 +200,7 @@ public class WikipediaParser {
 		if(text == null)
 			return null;
 		while (text.matches("(?s).*\\{{2}.*\\}{2}.*")) {
-			text = text.replaceAll("(?s)\\{{2}[^\\{\\}]*?\\}{2}","");
+			text = text.replaceAll("(?s)\\{{2}.*?\\}{2}","");
 		}
 		return text;
 	}
