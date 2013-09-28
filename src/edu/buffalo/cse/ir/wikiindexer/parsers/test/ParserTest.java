@@ -66,7 +66,6 @@ public class ParserTest extends PropertiesBasedTest {
 		
 		//five documents
 		testClass.parse(FileUtil.getRootFilesFolder(idxProps) + "five_entries.xml", list);
-		System.out.println(FileUtil.getRootFilesFolder(idxProps) + "five_entries.xml");
 		assertEquals(5, list.size());
 		
 		/* TODO: Add structural test here */
@@ -106,7 +105,6 @@ public class ParserTest extends PropertiesBasedTest {
 		int ns = numsections[cnt];
 		int idx = (cnt <= ns - 1) ? cnt : ns - 1;
 		assertEquals(ns, doc.getSections().size());
-		System.out.println(cnt + "  +  " + idx);
 		assertEquals(sectitles[cnt], doc.getSections().get(idx).getTitle());
 	}
 	

@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import edu.buffalo.cse.ir.wikiindexer.FileUtil;
 
@@ -112,15 +113,36 @@ public abstract class Dictionary implements Writeable {
 	 * null if no match is found
 	 */
 	public Collection<String> query(String queryStr) {
-		//TODO: Implement this method (FOR A BONUS)
+		// TODO: Implement this method (FOR A BONUS)
 		LinkedList<String> result = new LinkedList<String>();
-		if (exists(queryStr))
-		{
-			result.add(queryStr);
+		int indexOfStar = queryStr.indexOf('*');
+		if (indexOfStar != -1) {
+//			String regexString = queryStr.replaceAll("\\*", ".*");
+			StringBuilder sb = new StringBuilder();
+			for (char c : queryStr.toCharArray()) {
+				if (c!='*') {
+					sb.append(c);
+				} else {
+					sb.append(".*");
+				}
+			}
+			String regexString = sb.toString();
+			Pattern pattern = Pattern.compile(regexString);
+			Iterator<String> e = items.keySet().iterator();
+			while (e.hasNext()) {
+				String tmp = e.next();
+				if (pattern.matcher(tmp).matches()) {
+					result.add(tmp);
+				}
+			}
 			return result;
-		}else
-		{
-			return null;
+		} else {
+			if (exists(queryStr)) {
+				result.add(queryStr);
+				return result;
+			} else {
+				return null;
+			}
 		}
 	}
 	
