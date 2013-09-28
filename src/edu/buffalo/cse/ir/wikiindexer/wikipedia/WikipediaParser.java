@@ -197,9 +197,11 @@ public class WikipediaParser {
 	 * @return The parsed text with the markup removed
 	 */
 	public static String parseTemplates(String text) {
-		if(text == null)
+		if(text == null) {
 			return null;
-		while (text.matches("(?s).*\\{{2}.*\\}{2}.*")) {
+		}
+		Pattern pattern = Pattern.compile("(?s).*\\{{2}.*\\}{2}.*");
+		while (pattern.matcher(text).matches()) {
 			text = text.replaceAll("(?s)\\{{2}.*?\\}{2}","");
 		}
 		return text;
