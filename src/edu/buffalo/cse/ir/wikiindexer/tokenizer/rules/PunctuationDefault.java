@@ -5,6 +5,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 import java.lang.Character;
+import java.util.regex.Pattern;
 
 @RuleClass(className = RULENAMES.PUNCTUATION)
 public class PunctuationDefault implements TokenizerRule {
@@ -14,10 +15,14 @@ public class PunctuationDefault implements TokenizerRule {
 			return;
 		}
 		stream.reset();
+		Pattern matchPattern = Pattern.compile(".+?[\\.\\?\\!]+(\\s[A-z0-9]+)*");
+		Pattern replacePattern = Pattern.compile("[\\.\\?\\!]+($|(?=\\s[A-z]))");
 		while (stream.hasNext()) {
 			String tmp = stream.next();
-			if (tmp.matches(".+?[\\.\\?\\!]+(\\s[A-z0-9]+)*")) {
-				tmp = tmp.replaceAll("[\\.\\?\\!]+($|(?=\\s[A-z]))", "");
+			if (matchPattern.matcher(tmp).matches()) {
+//			if (tmp.matches(".+?[\\.\\?\\!]+(\\s[A-z0-9]+)*")) {
+				tmp = replacePattern.matcher(tmp).replaceAll("");
+//				tmp = tmp.replaceAll("[\\.\\?\\!]+($|(?=\\s[A-z]))", "");
 				stream.previous();
 				stream.set(tmp);
 				stream.next();

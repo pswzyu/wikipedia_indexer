@@ -2,6 +2,7 @@ package edu.buffalo.cse.ir.wikiindexer.tokenizer.rules;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.regex.Pattern;
 
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
@@ -17,6 +18,10 @@ public class SpecialCharsDefault implements TokenizerRule {
 			return;
 		}
 		stream.reset();
+		Pattern replacePattern1 = Pattern.compile("[~\\(\\)\\#$%&:;,_!\"\\=/\\s\\\\]");
+		Pattern replacePattern2 = Pattern.compile("^[@\\^\\*\\+\\<\\|\\>\\.!]");
+		Pattern replacePattern3 = Pattern.compile("\\.*$");
+		Pattern phoneNumberPattern = Pattern.compile("\\d{3}-\\d{4}");
 		while (stream.hasNext()) {
 			String tmp = stream.next();
 			if (this.containSC(tmp)) {
@@ -25,9 +30,12 @@ public class SpecialCharsDefault implements TokenizerRule {
 					stream.remove();
 					continue;
 				}
-				tmp = tmp.replaceAll("[~\\(\\)\\#$%&:;,_!\"\\=/\\s\\\\]", "");
-				tmp = tmp.replaceAll("^[@\\^\\*\\+\\<\\|\\>\\.!]", "");
-				tmp = tmp.replaceAll("\\.*$", "");
+				tmp = replacePattern1.matcher(tmp).replaceAll("");
+//				tmp = tmp.replaceAll("[~\\(\\)\\#$%&:;,_!\"\\=/\\s\\\\]", "");
+				tmp = replacePattern2.matcher(tmp).replaceAll("");
+//				tmp = tmp.replaceAll("^[@\\^\\*\\+\\<\\|\\>\\.!]", "");
+				tmp = replacePattern3.matcher(tmp).replaceAll("");
+//				tmp = tmp.replaceAll("\\.*$", "");
 //				int length = tmp.length();
 //				if (length > 1) {
 //					while (tmp.charAt(length - 1) == '.') {
@@ -41,7 +49,8 @@ public class SpecialCharsDefault implements TokenizerRule {
 					continue;
 				}
 				stream.previous();
-				if (tmp.matches("\\d{3}-\\d{4}")) {
+				if (phoneNumberPattern.matcher(tmp).matches()) {
+//				if (tmp.matches("\\d{3}-\\d{4}")) {
 					stream.set(tmp);
 				} else {
 					stream.set(tmp.split("[@\\^\\*\\+\\<\\|\\>]"));

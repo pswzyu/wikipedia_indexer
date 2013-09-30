@@ -1,5 +1,7 @@
 package edu.buffalo.cse.ir.wikiindexer.tokenizer.rules;
 
+import java.util.regex.Pattern;
+
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
@@ -23,7 +25,8 @@ public class DatesDefault implements TokenizerRule {
 		if (stream == null)
 			return;
 		stream.reset();
-
+		Pattern patternTime = Pattern.compile("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.,]*");
+		Pattern patternNumber = Pattern.compile("\\d{1,4}[,\\.]*");
 		while (stream.hasNext()) {
 			String token = stream.next();
 			token = token.toLowerCase();
@@ -145,7 +148,8 @@ public class DatesDefault implements TokenizerRule {
 			case "ad.":
 			case "ad": tokenCount +=1; isAD = true; break;
 			default:
-				if (token.matches("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.,]*")) {
+				if (patternTime.matcher(token).matches()) {
+//				if (token.matches("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.,]*")) {
 					if (containTime) {
 						this.processTemporal(stream);
 						break;
@@ -162,7 +166,8 @@ public class DatesDefault implements TokenizerRule {
 					if(token.contains("pm")) {
 						containPM = true;
 					}
-				} else if (token.matches("\\d{1,4}[,\\.]*")) {
+				} else if (patternNumber.matcher(token).matches()) {
+//				} else if (token.matches("\\d{1,4}[,\\.]*")) {
 					containDate = true;
 					tokenCount += 1;
 					token = token.replaceAll("[,\\.]", "");

@@ -9,16 +9,16 @@ public class PlayWithIndexReader {
 
 	public static void main(String[] args)
 	{
-		Properties prop =  Runner.loadProperties("./files/properties.config");
-		IndexReader author = new IndexReader(prop, INDEXFIELD.AUTHOR);
-		IndexReader category = new IndexReader(prop, INDEXFIELD.CATEGORY);
-		IndexReader link = new IndexReader(prop, INDEXFIELD.LINK);
-		IndexReader term = new IndexReader(prop, INDEXFIELD.TERM);
+//		Properties prop =  Runner.loadProperties("./files/properties.config");
+//		IndexReader author = new IndexReader(prop, INDEXFIELD.AUTHOR);
+//		IndexReader category = new IndexReader(prop, INDEXFIELD.CATEGORY);
+//		IndexReader link = new IndexReader(prop, INDEXFIELD.LINK);
+//		IndexReader term = new IndexReader(prop, INDEXFIELD.TERM);
 		
-		test(author);
-		test(category);
-		test(link);
-		test(term);
+//		test(author);
+//		test(category);
+//		test(link);
+//		test(term);
 	}
 	public static void test(IndexReader ir)
 	{

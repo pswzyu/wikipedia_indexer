@@ -5,6 +5,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 import java.lang.Character;
+import java.util.regex.Pattern;
 
 @RuleClass(className = RULENAMES.PUNCTUATION)
 
@@ -16,6 +17,7 @@ public class CapitalizationDefault implements TokenizerRule {
 			return;
 		}
 		stream.reset();
+		Pattern pattern = Pattern.compile(".*?[\\.\\!\\?]");
 		boolean isFirstWord = true;
 		// 遍历stream中的每一个元素
 		while (stream.hasNext()) {
@@ -26,7 +28,8 @@ public class CapitalizationDefault implements TokenizerRule {
 				stream.set(this.getLowerCase(token));
 				stream.next();
 			}
-			if (token.matches(".*?[\\.\\!\\?]")) {
+			if (pattern.matcher(token).matches()) {
+//			if (token.matches(".*?[\\.\\!\\?]")) {
 				isFirstWord = true;
 			}
 		}
