@@ -5,6 +5,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 import java.lang.Character;
+import java.util.regex.Pattern;
 
 @RuleClass(className = RULENAMES.NUMBERS)
 public class NumbersDefault implements TokenizerRule {
@@ -14,6 +15,9 @@ public class NumbersDefault implements TokenizerRule {
 			return;
 		}
 		stream.reset();
+		Pattern skiPattern = Pattern.compile("((-{0,1}\\d{8})|(\\d{2}:\\d{2}:\\d{2})|(-{0,1}\\d{8} \\d{2}:\\d{2}:\\d{2}))\\D*");
+		Pattern matchPattern = Pattern.compile("[0-9,\\.\\%\\/]+");
+		Pattern replacePattern = Pattern.compile("[0-9\\,\\.]");
 		
 		// 遍历stream中的每一个元素
 		while (stream.hasNext())
@@ -23,10 +27,11 @@ public class NumbersDefault implements TokenizerRule {
 			if (firstIndexOfNumber == -1) {
 				continue;
 			}
-			if (token.matches("((-{0,1}\\d{8})|(\\d{2}:\\d{2}:\\d{2})|(-{0,1}\\d{8} \\d{2}:\\d{2}:\\d{2}))\\D*")) {
+			if (skiPattern.matcher(token).matches()) {
+//			if (token.matches("((-{0,1}\\d{8})|(\\d{2}:\\d{2}:\\d{2})|(-{0,1}\\d{8} \\d{2}:\\d{2}:\\d{2}))\\D*")) {
 				continue;
 			}
-			token = this.removeNumber(token);
+			token = this.removeNumber(token, matchPattern, replacePattern);
 			stream.previous();
 			if (token == "" || token.isEmpty()) {
 				stream.remove();
@@ -53,10 +58,12 @@ public class NumbersDefault implements TokenizerRule {
 		}
 	}
 	
-	private String removeNumber(String s) {
+	private String removeNumber(String s, Pattern matchPattern, Pattern replacePattern) {
 		String tmp = s;
-		if (s.matches("[0-9,\\.\\%\\/]+")) {
-			tmp = s.replaceAll("[0-9\\,\\.]", "");
+		if (matchPattern.matcher(tmp).matches()) {
+//		if (s.matches("[0-9,\\.\\%\\/]+")) {
+			tmp = replacePattern.matcher(tmp).replaceAll("");
+//			tmp = s.replaceAll("[0-9\\,\\.]", "");
 		}
 		return tmp;
 	}

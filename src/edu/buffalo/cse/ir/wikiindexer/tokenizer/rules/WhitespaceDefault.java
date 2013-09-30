@@ -5,6 +5,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
 import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 import java.lang.Character;
+import java.util.regex.Pattern;
 
 @RuleClass(className = RULENAMES.PUNCTUATION)
 
@@ -17,9 +18,11 @@ public class WhitespaceDefault implements TokenizerRule {
 			return;
 		}
 		stream.reset();
+		Pattern replacePattern = Pattern.compile("(?s)^[\\s\\t\\n\\r]+");
 		while (stream.hasNext()) {
 			String tmp = stream.next();
-			tmp = tmp.replaceAll("(?s)^[\\s\\t\\n\\r]+", "");
+			tmp = replacePattern.matcher(tmp).replaceAll("");
+//			tmp = tmp.replaceAll("(?s)^[\\s\\t\\n\\r]+", "");
 			String[] result = tmp.split("(?s)[\\s\\t\\n\\r]+");
 			stream.previous();
 			stream.set(result);
