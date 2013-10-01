@@ -5,10 +5,7 @@ package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.regex.*;
-
-import com.sun.org.glassfish.external.statistics.Statistic;
 
 
 /**
@@ -40,11 +37,26 @@ public class WikipediaParser {
 	 * 传入的text需要预先处理好其他的Markup标记；
 	 * 但最终每个Section的部分还是需要去除一下Section标记，因为subsection的存在。
 	 */
+	private final static Pattern textFormattingPattern = Pattern.compile("('''''|'''|'')([^']+?)\\1");
+	private final static Pattern splitSectionPattern = Pattern.compile("(^|(?<=\n))(={2,6})[^=]+?\\2");
+	private final static Pattern replaceSectionTitlePattern = Pattern.compile("(^|(?<=\n))(={1,6})\\s*([^=]+?)\\s*\\2");
+	private final static Pattern parseListItemPattern1 = Pattern.compile("[//*//#]{1,4}\\s");
+	private final static Pattern parseListItemPattern2 = Pattern.compile("(^|(?<=\n)):\\s*");
+	private final static Pattern parseCategoryPattern = Pattern.compile("\\[\\[Category:[^\\[\\]]+?\\]\\]");
+	private final static Pattern replaceCategoryPattern = Pattern.compile("[\\|\\s]*\\]\\]$");
+	private final static Pattern replaceTagFormatPattern1 = Pattern.compile("((^|(?>=\n))<[^<>]*?>\\s*)|\\s*<[^<>]*?>");
+	private final static Pattern replaceTagFormatPattern2 = Pattern.compile("((^|(?>=\n))(&lt;)[^<>]*?(&gt;)\\s*)|\\s*(&lt;)[^<>]*?(&gt;)");
+	private final static Pattern parseTemplatesPattern = Pattern.compile("(?s).*\\{{2}.*\\}{2}.*");
+	private final static Pattern replaceTemplatesPattern = Pattern.compile("(?s)\\{{2}.*?\\}{2}");
+	private final static Pattern parseLinksPattern1 = Pattern.compile("\\[.*?\\]+");
+	private final static Pattern parseLinksPattern2 = Pattern.compile("^\\[\\[[a-z]{2}:.*\\]\\]");
+	private final static Pattern replaceBracketsPattern = Pattern.compile("\\s*\\(.*\\)");
+	private final static Pattern replaceSpacePattern = Pattern.compile("\\s+");
 	public static ArrayList<String> splitSection(String text)
 	{
-		HashMap<String, String> tmpMap = new HashMap<String, String>();
 		ArrayList<String> array = new ArrayList<String>();
-		Matcher m = Pattern.compile("(^|(?<=\n))(={2,6})[^=]+?\\2").matcher(text);
+		Matcher m = splitSectionPattern.matcher(text);
+//		Matcher m = Pattern.compile("(^|(?<=\n))(={2,6})[^=]+?\\2").matcher(text);
 		int tmpAnchor = 0;
 		String tmp = "";
 		while(m.find())
@@ -75,28 +87,7 @@ public class WikipediaParser {
 		{
 			array.add("Default");
 			array.add(WikipediaParser.parseSectionTitle(text));
-//			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
 		}
-//		int tmpAnchor = 0;
-//		String tmp = "";
-//		while(m.find())
-//		{
-//			if(!tmp.equals(""))
-//			{
-//				tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor, m.start()));
-//			}
-//			tmp = m.group();
-//			tmpAnchor = m.end();
-//		}
-//		
-//		if(!tmp.equals(""))
-//		{
-//			tmpMap.put(WikipediaParser.parseSectionTitle(tmp), text.substring(tmpAnchor));
-//		}
-//		else
-//		{
-//			tmpMap.put("Default", WikipediaParser.parseSectionTitle(text));
-//		}
 		return array;
 	}
 	
@@ -110,7 +101,7 @@ public class WikipediaParser {
 	public static String parseSectionTitle(String titleStr) {
 		if(titleStr==null)
 			return null;
-		titleStr = titleStr.replaceAll("(^|(?<=\n))(={1,6})\\s*([^=]+?)\\s*\\2", "$3");
+		titleStr = replaceSectionTitlePattern.matcher(titleStr).replaceAll("$3");
 		return titleStr;
 	}
 	
@@ -129,8 +120,8 @@ public class WikipediaParser {
 	public static String parseListItem(String itemText) {
 		if(itemText == null)
 			return null;
-		itemText = itemText.replaceAll("[//*//#]{1,4}\\s","");
-		itemText = itemText.replaceAll("(^|(?<=\n)):\\s*", "");
+		itemText = parseListItemPattern1.matcher(itemText).replaceAll("");
+		itemText = parseListItemPattern2.matcher(itemText).replaceAll("");
 		/*
 		 * 下边的代码是针对Wikipedia Markup页面上来写的。
 		 * 但TA给的TEST代码里只是简单地处理:开头的句子，并没有考虑;的情况。
@@ -157,18 +148,20 @@ public class WikipediaParser {
 	public static String parseTextFormatting(String text) {
 		if(text == null)
 			return null;
-		text = text.replaceAll("('''''|'''|'')([^']+?)\\1", "$2");
+		text = textFormattingPattern.matcher(text).replaceAll("$2");
+//		text = text.replaceAll("('''''|'''|'')([^']+?)\\1", "$2");
 		return text;
 	}
 	
 	
 	public static Collection<String> parseCategories(String text) {
 		ArrayList<String> result = new ArrayList<String>();
-		Matcher m = Pattern.compile("\\[\\[Category:[^\\[\\]]+?\\]\\]").matcher(text);
+		Matcher m = parseCategoryPattern.matcher(text);
 		while (m.find()) {
 			String tmp = m.group();
 			tmp = tmp.substring(11);
-			tmp = tmp.replaceAll("[\\|\\s]*\\]\\]$", "");
+			tmp = replaceCategoryPattern.matcher(tmp).replaceAll("");
+//			tmp = tmp.replaceAll("[\\|\\s]*\\]\\]$", "");
 			result.add(tmp);
 		}
 //		[[Category:People from Glasgow| ]]
@@ -184,8 +177,8 @@ public class WikipediaParser {
 	public static String parseTagFormatting(String text) {
 		if(text==null)
 			return null;
-		text = text.replaceAll("((^|(?>=\n))<[^<>]*?>\\s*)|\\s*<[^<>]*?>","");
-		text = text.replaceAll("((^|(?>=\n))(&lt;)[^<>]*?(&gt;)\\s*)|\\s*(&lt;)[^<>]*?(&gt;)", "");
+		text = replaceTagFormatPattern1.matcher(text).replaceAll("");
+		text = replaceTagFormatPattern2.matcher(text).replaceAll("");
 		return text;
 	}
 	
@@ -200,9 +193,8 @@ public class WikipediaParser {
 		if(text == null) {
 			return null;
 		}
-		Pattern pattern = Pattern.compile("(?s).*\\{{2}.*\\}{2}.*");
-		while (pattern.matcher(text).matches()) {
-			text = text.replaceAll("(?s)\\{{2}.*?\\}{2}","");
+		while (parseTemplatesPattern.matcher(text).matches()) {
+			text = replaceTemplatesPattern.matcher(text).replaceAll("");
 		}
 		return text;
 	}
@@ -259,7 +251,7 @@ public class WikipediaParser {
 		tmpArray.add("");
 		int start = 0;
 		int end = 0;
-		Matcher m = Pattern.compile("\\[.*?\\]+").matcher(textWithoutTag);
+		Matcher m = parseLinksPattern1.matcher(textWithoutTag);
 		while (m.find()) {
 			String tmp = m.group();
 			start = m.start();
@@ -307,7 +299,7 @@ public class WikipediaParser {
 					sb.append(WikipediaParser.getVisibleText(tmp));
 				}
 				tmpArray.add("");
-			} else if (tmp.matches("^\\[\\[[a-z]{2}:.*\\]\\]")) {
+			} else if (parseLinksPattern2.matcher(tmp).matches()) {
 				sb.append(tmp.substring(2, tmp.length() - 2));
 				tmpArray.add("");
 			} else {
@@ -317,7 +309,6 @@ public class WikipediaParser {
 		}
 		sb.append(textWithoutTag.substring(end));
 		tmpArray.set(0, sb.toString());
-//		System.out.println(tmpArray);
 		String[] finalResult = (String[]) tmpArray.toArray(new String[tmpArray.size()]);
 		return finalResult;
 	}
@@ -333,14 +324,30 @@ public class WikipediaParser {
 		int length = text.length();
 		if(text.startsWith("[[")) {
 			text = text.substring(2, length - 2);
-			text = text.replaceAll("\\s*\\(.*\\)", "");
+			text = replaceBracketsPattern.matcher(text).replaceAll("");
 		}
 		length = text.length();
 		
-		int indexOfVb = text.indexOf("|");
-		int indexOfComma = text.indexOf(",");
-		int indexOfPound = text.indexOf("#");
-		int indexOfColon = text.indexOf(":");
+		char[] tmpChars = text.toCharArray();
+		int indexOfVb = -1;
+		int indexOfComma = -1;
+		int indexOfPound = -1;
+		int indexOfColon = -1;
+		for (int i = 0; i < length; i++) {
+			if (indexOfVb == -1 && tmpChars[i] == '|') {
+				indexOfVb = i;
+			}
+			if (indexOfComma == -1 && tmpChars[i] == ',') {
+				indexOfComma = i;
+			}
+			if (indexOfPound == -1 && tmpChars[i] == '#') {
+				indexOfPound = i;
+			}
+			if (indexOfColon == -1 && tmpChars[i] == ':') {
+				indexOfColon = i;
+			}
+		}
+		
 		if(indexOfVb != -1) {
 			if(indexOfVb + 1 == length) {
 				length -= 1;
@@ -385,15 +392,12 @@ public class WikipediaParser {
 		}
 		length = url.length();
 		int indexOfVb = url.indexOf("|");
-		int indexOfComma = url.indexOf(",");
-		int indexOfPound = url.indexOf("#");
-		int indexOfColon = url.indexOf(":");
 		if(indexOfVb != -1) {
 			result = url.substring(0, indexOfVb);
 		} else {
 			result = url;
 		}
-		result = result.replaceAll("\\s+", "_");
+		result = replaceSpacePattern.matcher(result).replaceAll("_");
 		result = Character.toUpperCase(result.charAt(0)) + result.substring(1);
 		return result;
 	}
