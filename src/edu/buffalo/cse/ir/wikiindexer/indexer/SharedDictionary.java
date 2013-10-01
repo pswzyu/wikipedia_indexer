@@ -50,8 +50,7 @@ public class SharedDictionary extends Dictionary {
 		String fieldname = FileUtil.getFieldName(field);
 		if (fieldname.equals("link"))
 			fieldname = "document";
-		System.out.println("SD:"+FileUtil.getRootFilesFolder(props)+"./dics/" +
-				fieldname+(surfix.equals("")?"":"-")+surfix+".txt");
+		checkDir();
 		return FileUtil.getRootFilesFolder(props)+"./dics/" +
 			fieldname+(surfix.equals("")?"":"-")+surfix+".txt";
 	}

@@ -73,7 +73,7 @@ public abstract class Dictionary implements Writeable {
 	        while (iter.hasNext())
 	        {
 	        	String this_key = iter.next();
-	        	str.append(this_key + ":=" + items.get(this_key)+'\n');
+	        	str.append(this_key + ":=>" + items.get(this_key)+'\n');
 	        }
 	        bw.write(str.toString());
 	        bw.flush();
@@ -154,4 +154,10 @@ public abstract class Dictionary implements Writeable {
 		return items.size();
 	}
 	protected abstract String getWriteFilename();
+	protected void checkDir()
+	{
+		File dir = new File(FileUtil.getRootFilesFolder(props)+"./dics/");
+		if (!dir.exists())
+			dir.mkdir();
+	}
 }

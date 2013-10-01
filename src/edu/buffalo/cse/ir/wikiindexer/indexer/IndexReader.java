@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,6 +40,7 @@ public class IndexReader {
 	TreeMap< String, LinkedList<IdAndOccurance> > idx;
 	HashMap< String, Integer > occ_freq; // 用来存储idx中某个key的总共出现次数
 	HashMap< String, String > oth_dic; // 名字->id
+	HashMap< String, String > inv_other_dic; // id->name
 	HashMap< String, String > doc_dic; // id->名字。 因为搜索的不一样
 	
 	/**
@@ -69,6 +71,8 @@ public class IndexReader {
 	public void recoverDocDic()
 	{
 		doc_dic = new HashMap<String, String>();
+		if (field == INDEXFIELD.LINK)
+			oth_dic = new HashMap<String, String>();
 		File file = new File(getReadFilename(-1)[0]);
 		FileReader fr;
 		try {
@@ -77,8 +81,12 @@ public class IndexReader {
 			String line = null;
 			while ( (line = br.readLine()) != null )
 			{
-				String[] str_id = line.split(":="); // 0->str, 1->id
+				String[] str_id = line.split(":=>"); // 0->str, 1->id
 				doc_dic.put(str_id[1], str_id[0]); // 要反过来存储因为后边基本都是知道id找名字
+				if (field == INDEXFIELD.LINK)// 对于link需要将docdic反过来作为othdic
+				{
+					oth_dic.put(str_id[0], str_id[1]);
+				}
 			}
 			br.close();
 			fr.close();
@@ -93,24 +101,33 @@ public class IndexReader {
 	 */
 	public void recoverOther()
 	{
-		// 先读取字典
-		oth_dic = new HashMap<String, String>();
-		File file = new File(getReadFilename(0)[0]);
-		try {
-			FileReader fr = new FileReader(file);
-			BufferedReader br = new BufferedReader(fr);
-			String line = null;
-			while ( (line = br.readLine()) != null )
-			{
-				String[] str_id = line.split(":="); // 0->str, 1->id
-				oth_dic.put(str_id[0], str_id[1]); // 不要反过来，后边基本都是找名字
+		File file = null;
+		if (field != INDEXFIELD.LINK) // link的字典用的doc的
+		{
+			// 先读取字典
+			oth_dic = new HashMap<String, String>();
+			inv_other_dic = new HashMap<String, String>();
+			file = new File(getReadFilename(0)[0]);
+			try {
+				FileReader fr = new FileReader(file);
+				BufferedReader br = new BufferedReader(fr);
+				String line = null;
+				while ( (line = br.readLine()) != null )
+				{
+					String[] str_id = line.split(":=>"); // 0->str, 1->id
+					oth_dic.put(str_id[0], str_id[1]); // 一正一反
+					inv_other_dic.put(str_id[1], str_id[0]);
+				}
+				br.close();
+				fr.close();
+					
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			br.close();
-			fr.close();
-				
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}else // link的反表就是docdic
+		{
+			inv_other_dic = doc_dic;
 		}
 		// 然后读取idx
 		file = new File(getReadFilename(0)[1]);
@@ -120,7 +137,7 @@ public class IndexReader {
 			String line = null;
 			while ( (line = br.readLine()) != null )
 			{
-				String[] split1 = line.split(":="); // 0是名字
+				String[] split1 = line.split(":=>"); // 0是名字
 				String[] split2 = split1[1].split(";");// 每个都是一个did,occ
 				int total_occ = 0; // 统计这个item总共出现了几次
 				LinkedList<IdAndOccurance> li =  new LinkedList<IdAndOccurance>();
@@ -158,13 +175,12 @@ public class IndexReader {
 			{
 				FileReader fr_idx = new FileReader(idx_file[step]);
 				BufferedReader br_idx = new BufferedReader(fr_idx);
-				StringBuffer sb_idx = new StringBuffer();
 				
 				String tmp = null;
 				while (  (tmp = br_idx.readLine() ) != null )
 				{
 					int total_occ = 0; // 统计这个item总共出现了几次
-					String[] split1 = tmp.split(":="); // 0是term
+					String[] split1 = tmp.split(":=>"); // 0是term
 					String[] split2 = split1[1].split(";");// 每个都是一个did,occ
 					LinkedList<IdAndOccurance> li = idx.get(split1[0]);
 					if (li == null) // 如果没有这个term
@@ -218,6 +234,8 @@ public class IndexReader {
 						occ_freq.put(split1[0], occ_freq.get(split1[0]) + total_occ);
 					}
 				}
+				br_idx.close();
+				fr_idx.close();
 			}
 		}catch(IOException ex)
 		{
@@ -249,11 +267,11 @@ public class IndexReader {
 	 */
 	public Map<String, Integer> getPostings(String key) {
 		HashMap<String, Integer> result = new HashMap<String, Integer>();
-		String search_key;
+		String search_key=null;
 		if (field == INDEXFIELD.TERM) // 如果是term直接查找
 		{
 			search_key = key;
-		}else // 如果不是term， 需要先到对应的dic中找到id
+		}else
 		{
 			search_key = oth_dic.get(key);
 		}
@@ -267,7 +285,7 @@ public class IndexReader {
 		while(iter.hasNext())
 		{
 			IdAndOccurance iao = iter.next();
-			result.put(doc_dic.get(iao.id), iao.occ);
+			result.put(doc_dic.get(Integer.toString(iao.id)), iao.occ);
 		}
 		return result;
 	}
@@ -282,7 +300,7 @@ public class IndexReader {
 	 */
 	public Collection<String> getTopK(int k) {
 		Set<Entry<String, Integer> > pairs = occ_freq.entrySet();
-		LinkedList<String> result = new LinkedList<String>();
+		HashSet<String> result = new HashSet<String>();
 		for(int step = 0; step != k; ++ step)
 		{
 			Iterator<Entry<String, Integer> > iter = pairs.iterator();
@@ -305,7 +323,19 @@ public class IndexReader {
 				result.add(max_now.getKey());
 			}
 		}
-		return result;
+		if(field != INDEXFIELD.TERM) // 查字典
+		{
+			HashSet<String> new_result = new HashSet<String>();
+			Iterator<String> iter = result.iterator();
+			while (iter.hasNext())
+			{
+				new_result.add(  inv_other_dic.get(iter.next() )  );	
+			}
+			return new_result;
+		}else
+		{
+			return result;
+		}
 	}
 	
 	/**
@@ -326,12 +356,16 @@ public class IndexReader {
 			for (int step = 0; step != terms.length; ++ step)
 			{
 				terms[step] = oth_dic.get(terms[step]);
+				if (terms[step] == null)
+					return null;
 			}
 		}
 		// 统计tmp——re
 		for (int step = 0; step != terms.length; ++ step)
 		{
 			LinkedList<IdAndOccurance> li = idx.get(terms[step]);
+			if (li == null)
+				return null;
 			ListIterator<IdAndOccurance> iter = li.listIterator();
 			while(iter.hasNext())
 			{
@@ -354,7 +388,7 @@ public class IndexReader {
 		// 从tmp中遍历， 依次找出最大的，删除出现次数不足terms.length的
 		while (!temp_re.isEmpty())
 		{
-			IdAndOccurance now_highest = null;
+			IdAndOccurance now_highest = new IdAndOccurance(-1, 0);
 			Integer highest_did = 0;
 			Set<Integer> docids = temp_re.keySet();
 			Iterator<Integer> iter = docids.iterator();
@@ -364,7 +398,7 @@ public class IndexReader {
 				IdAndOccurance toto = temp_re.get(did);
 				if (toto.id < terms.length) // 不是每个term都出现在这个did里了
 				{
-					temp_re.remove(did);
+					iter.remove();
 					continue;
 				}
 				if (toto.occ >= now_highest.occ)
@@ -373,9 +407,10 @@ public class IndexReader {
 					highest_did = did;
 				}
 			}
-			if (now_highest != null)
+			if (now_highest.id != -1) // id是用来计数的， 如果id还是-1说明所有的都被删掉了
 			{
 				re.put(doc_dic.get(Integer.toString(highest_did)), now_highest.occ);
+				temp_re.remove(highest_did);
 			}
 		}
 		return re;

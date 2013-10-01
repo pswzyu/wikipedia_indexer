@@ -116,7 +116,7 @@ public class IndexWriter implements Writeable {
 	 * @throws IndexerException: If any exception occurs while indexing
 	 */
 	public void addToIndex(String key, int valueId, int numOccurances) throws IndexerException {
-		if (field != INDEXFIELD.TERM) // 如果不是term， 查字典然后加入index
+		if (field == INDEXFIELD.CATEGORY || field == INDEXFIELD.AUTHOR) // 如果不是term,也不是link， 查字典然后加入index
 		{
 			key = Integer.toString(dic.lookup(key));
 		}
@@ -124,7 +124,14 @@ public class IndexWriter implements Writeable {
 		LinkedList<IdAndOccurance> find = idx.get(key);
 		if (find != null)
 		{
-			find.add(new IdAndOccurance(valueId, numOccurances));
+			ListIterator<IdAndOccurance> list_iter =  find.listIterator(find.size());
+			while(list_iter.hasPrevious())
+			{
+				if (list_iter.previous().id < valueId) // 找到比当前id小的
+					break;
+			}
+			list_iter.next();//然后倒回一个并且插入
+			list_iter.add(new IdAndOccurance(valueId, numOccurances));
 		}else // 没有就创建
 		{
 			LinkedList<IdAndOccurance> tmp = new LinkedList<IdAndOccurance>();
@@ -166,7 +173,7 @@ public class IndexWriter implements Writeable {
 	        {
 	        	Entry<String, LinkedList<IdAndOccurance>> this_entry = iter.next();
 	        	ListIterator<IdAndOccurance> list_iter = this_entry.getValue().listIterator();
-	        	str.append(this_entry.getKey() + ":=");
+	        	str.append(this_entry.getKey() + ":=>");
 	        	if ( list_iter.hasNext() )
 	        	{
 		        	while (true)
@@ -204,10 +211,15 @@ public class IndexWriter implements Writeable {
 	}
 	private String getWriteFilename()
 	{
-		System.out.println("INDEXWRITER:"+FileUtil.getRootFilesFolder(props)+"./index/" +
-				FileUtil.getFieldName(field)+(part_number!=-1?"-"+part_number:"")+".txt");
+		checkDir();
 		return FileUtil.getRootFilesFolder(props)+"./index/" +
 				FileUtil.getFieldName(field)+(part_number!=-1?"-"+part_number:"")+".txt";
+	}
+	private void checkDir()
+	{
+		File dir = new File(FileUtil.getRootFilesFolder(props)+"./index/");
+		if (!dir.exists())
+			dir.mkdir();
 	}
 
 }
