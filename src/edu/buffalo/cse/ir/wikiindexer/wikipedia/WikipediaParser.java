@@ -5,11 +5,7 @@ package edu.buffalo.cse.ir.wikiindexer.wikipedia;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.regex.*;
-
-import com.apple.dnssd.TXTRecord;
-import com.sun.org.glassfish.external.statistics.Statistic;
 
 
 /**
