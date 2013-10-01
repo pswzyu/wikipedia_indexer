@@ -76,22 +76,21 @@ public class DocumentTransformer implements Callable<IndexableDocument> {
 		// category
 		List<String> catagories = target_doc.getCategories();
 		Iterator<String> catagories_iter = catagories.iterator();
-		String catagories_string = "";
+		TokenStream ts_catagory = new TokenStream("");
 		while (catagories_iter.hasNext())
 		{
-			catagories_string += catagories_iter.next() + ". ";
+			ts_catagory.add(catagories_iter.next());
 		}
-		TokenStream ts_catagory = new TokenStream(catagories_string);
+		
 		//LINK
 		Set<String> links = target_doc.getLinks();
 		Iterator<String> links_iter = links.iterator();
-		String links_string = "";
+		TokenStream ts_link = new TokenStream("");
 		while (links_iter.hasNext())
 		{
-			links_string += links_iter.next() + ". ";
+			ts_link.add(links_iter.next());
 		}
 		//System.out.println(links_string);
-		TokenStream ts_link = new TokenStream(links_string);
 		
 		// Lets ROCK!
 		tz_map.get(INDEXFIELD.TERM).tokenize(ts_term);
