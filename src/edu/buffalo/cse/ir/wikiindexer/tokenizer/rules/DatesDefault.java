@@ -14,12 +14,14 @@ public class DatesDefault implements TokenizerRule {
 			containTime = false,
 			containPM = false;
 	private String year = null,
+			doubleYearDate = null,
 			month = null,
 			day = null,
 			hour = null,
 			minute = null,
 			second = null;
 	private int tokenCount = 0;
+	private static Pattern replaceForRetainPattern = Pattern.compile(".*[0-9A-z:]");
 	
 	public void apply(TokenStream stream) throws TokenizerException {
 		if (stream == null)
@@ -150,7 +152,6 @@ public class DatesDefault implements TokenizerRule {
 			case "ad": tokenCount +=1; isAD = true; break;
 			default:
 				if (patternTime.matcher(token).matches()) {
-//				if (token.matches("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.,]*")) {
 					if (containTime) {
 						this.processTemporal(stream);
 						break;
@@ -168,7 +169,6 @@ public class DatesDefault implements TokenizerRule {
 						containPM = true;
 					}
 				} else if (patternNumber.matcher(token).matches()) {
-//				} else if (token.matches("\\d{1,4}[,\\.]*")) {
 					containDate = true;
 					tokenCount += 1;
 					token = token.replaceAll("[,\\.]", "");
@@ -214,7 +214,6 @@ public class DatesDefault implements TokenizerRule {
 					int i = 0;
 					int markStart = 0;
 					int markEnd = 0;
-					int indexOfLastNumber = 0;
 					for (; i < charsOfToken.length; i++) {
 						char c = charsOfToken[i];
 						if (c >= '0' && c <= '9') {
@@ -238,7 +237,6 @@ public class DatesDefault implements TokenizerRule {
 									markEnd = i;
 								}
 								sb2.append(c);
-								indexOfLastNumber = i;
 							}
 						}
 					}
@@ -246,7 +244,7 @@ public class DatesDefault implements TokenizerRule {
 					if (year2.length() < 4) {
 						year2 = year1.substring(0, 4 - year2.length()) + year2;
 					}
-					String temporal = "";
+					this.doubleYearDate = "";
 					if (month == null) {
 						month = "01";
 					}
@@ -254,14 +252,9 @@ public class DatesDefault implements TokenizerRule {
 						day = "01";
 					}
 					if (isBC) {
-						temporal += "-";
+						this.doubleYearDate += "-";
 					}
-					temporal += year1 + month + day + token.substring(markStart, markEnd) + year2 + month + day + token.substring(indexOfLastNumber + 1);
-					if (stream.hasNext()) {
-						this.processTemporal(stream, false, temporal);
-					} else {
-						this.processTemporal(stream, true, temporal);
-					}
+					this.doubleYearDate += year1 + month + day + token.substring(markStart, markEnd) + year2 + month + day;
 					break;
 				} else {
 					this.processTemporal(stream);
@@ -303,14 +296,10 @@ public class DatesDefault implements TokenizerRule {
 	}
 	
 	private void processTemporal(TokenStream stream) {
-			this.processTemporal(stream, false, null);
+			this.processTemporal(stream, false);
 	}
 	
 	private void processTemporal(TokenStream stream, boolean lastToken) {
-		this.processTemporal(stream, lastToken, null);
-	}
-	
-	private void processTemporal(TokenStream stream, boolean lastToken, String dualYear) {
 		if (tokenCount > 0) {
 			if (!lastToken) {
 				stream.previous();
@@ -322,15 +311,14 @@ public class DatesDefault implements TokenizerRule {
 			String temporal = "";
 			String retainString = stream.previous();
 			stream.next();
-			retainString = retainString.replaceAll("[0-9A-z:]*", "");
+			retainString = replaceForRetainPattern.matcher(retainString).replaceAll("");
 			while (tokenCount > 0) {
 				tokenCount -= 1;
 				stream.previous();
 				stream.remove();
 			}
-			if (dualYear != null) {
-				temporal = dualYear;
-				retainString = "";
+			if (this.doubleYearDate!= null) {
+				temporal = this.doubleYearDate;
 			} else if (containDate) {
 				year = year == null ? "1900" : year;
 				if (month == null) {
