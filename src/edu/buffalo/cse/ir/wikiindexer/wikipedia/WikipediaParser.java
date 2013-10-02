@@ -51,6 +51,7 @@ public class WikipediaParser {
 	private final static Pattern parseLinksPattern1 = Pattern.compile("\\[.*?\\]+");
 	private final static Pattern parseLinksPattern2 = Pattern.compile("^\\[\\[[a-z]{2}:.*\\]\\]");
 	private final static Pattern replaceBracketsPattern = Pattern.compile("\\s*\\(.*\\)");
+	private final static Pattern replaceSquareBracketsPattern = Pattern.compile("[\\[\\]]+");
 	private final static Pattern replaceSpacePattern = Pattern.compile("\\s+");
 	public static ArrayList<String> splitSection(String text)
 	{
@@ -323,7 +324,8 @@ public class WikipediaParser {
 		String result = "";
 		int length = text.length();
 		if(text.startsWith("[[")) {
-			text = text.substring(2, length - 2);
+			text = replaceSquareBracketsPattern.matcher(text).replaceAll("");
+//			text = text.substring(2, length - 2);
 			text = replaceBracketsPattern.matcher(text).replaceAll("");
 		}
 		length = text.length();
@@ -388,7 +390,7 @@ public class WikipediaParser {
 		String result = "";
 		int length = url.length();
 		if(url.startsWith("[[")) {
-			url = url.substring(2, length - 2);
+			url = replaceSquareBracketsPattern.matcher(url).replaceAll("");
 		}
 		length = url.length();
 		int indexOfVb = url.indexOf("|");
@@ -398,7 +400,9 @@ public class WikipediaParser {
 			result = url;
 		}
 		result = replaceSpacePattern.matcher(result).replaceAll("_");
-		result = Character.toUpperCase(result.charAt(0)) + result.substring(1);
+		if (result.length() > 1) {
+			result = Character.toUpperCase(result.charAt(0)) + result.substring(1);
+		}
 		return result;
 	}
 	
