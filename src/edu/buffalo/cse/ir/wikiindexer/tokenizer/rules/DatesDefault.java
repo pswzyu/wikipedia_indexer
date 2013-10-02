@@ -364,6 +364,7 @@ public class DatesDefault implements TokenizerRule {
 		this.containTime = false;
 		this.containPM = false;
 		this.year = null;
+		this.doubleYearDate = null;
 		this.month = null;
 		this.day = null;
 		this.hour = null;
