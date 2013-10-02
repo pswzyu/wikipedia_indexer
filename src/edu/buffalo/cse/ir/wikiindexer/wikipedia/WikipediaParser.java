@@ -40,7 +40,7 @@ public class WikipediaParser {
 	private final static Pattern textFormattingPattern = Pattern.compile("('''''|'''|'')([^']+?)\\1");
 	private final static Pattern splitSectionPattern = Pattern.compile("(^|(?<=\n))(={2,6})[^=]+?\\2");
 	private final static Pattern replaceSectionTitlePattern = Pattern.compile("(^|(?<=\n))(={1,6})\\s*([^=]+?)\\s*\\2");
-	private final static Pattern parseListItemPattern1 = Pattern.compile("[//*//#]{1,4}\\s");
+	private final static Pattern parseListItemPattern1 = Pattern.compile("[//*//#]{1,4}\\s*");
 	private final static Pattern parseListItemPattern2 = Pattern.compile("(^|(?<=\n)):\\s*");
 	private final static Pattern parseCategoryPattern = Pattern.compile("\\[\\[Category:[^\\[\\]]+?\\]\\]");
 	private final static Pattern replaceCategoryPattern = Pattern.compile("[\\|\\s]*\\]\\]$");
