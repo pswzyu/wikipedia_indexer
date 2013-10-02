@@ -10,7 +10,7 @@ import edu.buffalo.cse.ir.wikiindexer.tokenizer.rules.TokenizerRule.RULENAMES;
 
 @RuleClass(className = RULENAMES.SPECIALCHARS)
 public class SpecialCharsDefault implements TokenizerRule {
-	private final static Character[] removedChar = {'~', ',', '(', ')', '#', '$', '%', '&', ':', ';', '_', '/', '\\', '@', '=', '^', '*', '+', '<', '|', '>', '"', '.', '!' };
+	private final static Character[] removedChar = {'\'', '*','~', ',', '(', ')', '#', '$', '%', '&', ':', ';', '_', '/', '\\', '@', '=', '^', '*', '+', '<', '|', '>', '"', '.', '!' };
 	private final static HashSet<Character> removedCharSet = new HashSet<Character>(Arrays.asList(removedChar));
 	
 	public void apply(TokenStream stream) throws TokenizerException {
@@ -18,8 +18,8 @@ public class SpecialCharsDefault implements TokenizerRule {
 			return;
 		}
 		stream.reset();
-		Pattern replacePattern1 = Pattern.compile("[~\\(\\)\\#$%&:;,_!\"\\=/\\s\\\\]");
-		Pattern replacePattern2 = Pattern.compile("^[@\\^\\*\\+\\<\\|\\>\\.!]");
+		Pattern replacePattern1 = Pattern.compile("['\\*~\\(\\)\\#$%&:;,_!\"\\=/\\s\\\\]");
+		Pattern replacePattern2 = Pattern.compile("^[@\\^\\*\\+\\<\\|\\>\\.!]+");
 		Pattern replacePattern3 = Pattern.compile("\\.*$");
 		Pattern phoneNumberPattern = Pattern.compile("\\d{3}-\\d{4}");
 		while (stream.hasNext()) {
