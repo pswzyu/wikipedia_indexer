@@ -27,6 +27,7 @@ public class DatesDefault implements TokenizerRule {
 		stream.reset();
 		Pattern patternTime = Pattern.compile("\\d{1,2}(:\\d{1,2}){1,2}\\s*[aApPmM\\.,]*");
 		Pattern patternNumber = Pattern.compile("\\d{1,4}[,\\.]*");
+		Pattern patternTwoYearPattern = Pattern.compile("\\d{4}.\\d{1,4}[,\\.]*");
 		while (stream.hasNext()) {
 			String token = stream.next();
 			token = token.toLowerCase();
@@ -205,6 +206,63 @@ public class DatesDefault implements TokenizerRule {
 							break;
 						}
 					}
+				} else if (patternTwoYearPattern.matcher(token).matches()) {
+					containDate = true;
+					tokenCount += 1;
+					char[] charsOfToken = token.toCharArray();
+					StringBuilder sb1 = new StringBuilder();
+					int i = 0;
+					int markStart = 0;
+					int markEnd = 0;
+					int indexOfLastNumber = 0;
+					for (; i < charsOfToken.length; i++) {
+						char c = charsOfToken[i];
+						if (c >= '0' && c <= '9') {
+							sb1.append(c);
+						} else {
+							markStart = i;
+							break;
+						}
+					}
+					String year1 = sb1.toString();
+					StringBuilder sb2 = new StringBuilder();
+					if (!this.setYear(year1)) {
+						tokenCount -= 1;
+						this.processTemporal(stream);
+						break;
+					} else {
+						for (; i < charsOfToken.length; i++) {
+							char c = charsOfToken[i];
+							if (c >= '0' && c <= '9') {
+								if (markEnd == 0) {
+									markEnd = i;
+								}
+								sb2.append(c);
+								indexOfLastNumber = i;
+							}
+						}
+					}
+					String year2 = sb2.toString();
+					if (year2.length() < 4) {
+						year2 = year1.substring(0, 4 - year2.length()) + year2;
+					}
+					String temporal = "";
+					if (month == null) {
+						month = "01";
+					}
+					if (day == null) {
+						day = "01";
+					}
+					if (isBC) {
+						temporal += "-";
+					}
+					temporal += year1 + month + day + token.substring(markStart, markEnd) + year2 + month + day + token.substring(indexOfLastNumber + 1);
+					if (stream.hasNext()) {
+						this.processTemporal(stream, false, temporal);
+					} else {
+						this.processTemporal(stream, true, temporal);
+					}
+					break;
 				} else {
 					this.processTemporal(stream);
 				}
@@ -245,10 +303,14 @@ public class DatesDefault implements TokenizerRule {
 	}
 	
 	private void processTemporal(TokenStream stream) {
-		this.processTemporal(stream, false);
+			this.processTemporal(stream, false, null);
 	}
 	
 	private void processTemporal(TokenStream stream, boolean lastToken) {
+		this.processTemporal(stream, lastToken, null);
+	}
+	
+	private void processTemporal(TokenStream stream, boolean lastToken, String dualYear) {
 		if (tokenCount > 0) {
 			if (!lastToken) {
 				stream.previous();
@@ -266,7 +328,10 @@ public class DatesDefault implements TokenizerRule {
 				stream.previous();
 				stream.remove();
 			}
-			if (containDate) {
+			if (dualYear != null) {
+				temporal = dualYear;
+				retainString = "";
+			} else if (containDate) {
 				year = year == null ? "1900" : year;
 				if (month == null) {
 					month = "01";
