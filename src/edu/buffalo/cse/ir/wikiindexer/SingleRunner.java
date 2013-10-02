@@ -101,6 +101,7 @@ public class SingleRunner {
 		parser.parse(FileUtil.getDumpFileName(properties), list);
 		
 		System.out.println("Finished parsing: " + (System.currentTimeMillis() - start));
+		System.out.println("Parsing used: "+parser.total_time);
 		Map<INDEXFIELD, Tokenizer> tknizerMap;
 		ExecutorService svc = Executors.newSingleThreadExecutor();
 		CompletionService<IndexableDocument> pool = new ExecutorCompletionService<IndexableDocument>(svc);

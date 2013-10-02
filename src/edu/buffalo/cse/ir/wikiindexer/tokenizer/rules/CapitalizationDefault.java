@@ -47,7 +47,7 @@ public class CapitalizationDefault implements TokenizerRule {
 		} else if (countOfUpChar == 1 && (s.charAt(0) >= 'A' && s.charAt(0) <= 'Z')) {
 			return s.toLowerCase();
 		}
-		System.out.println(s);
+		//System.out.println(s);
 		return s;
 	}
 

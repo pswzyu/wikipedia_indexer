@@ -36,6 +36,8 @@ public class Parser {
 	/* */
 	private final Properties props;
 	
+	public static int total_time = 0;
+	
 	/**
 	 * 
 	 * @param idxConfig
@@ -115,7 +117,7 @@ public class Parser {
 
 		@Override
 		public void endDocument() throws SAXException {
-			System.out.println("endDocument");
+			//System.out.println("endDocument");
 		}
 
 		@Override
@@ -176,12 +178,14 @@ public class Parser {
 							authorFromXml, ttl);
 					//new WikipediaParser(temp_d, text, parser, queue);
 					
+					
 					text = WikipediaParser.parseListItem(text);
 					text = WikipediaParser.parseTextFormatting(text);
 					text = WikipediaParser.parseTagFormatting(text);
 					text = WikipediaParser.parseTemplates(text);
 					
 					
+					long a = System.currentTimeMillis();
 					temp_d.publicAddCategories(WikipediaParser.parseCategories(text));
 					// 解析链接并将得到的链接加入到link字段中
 					String[] links = WikipediaParser.parseLinks(text);
@@ -197,6 +201,7 @@ public class Parser {
 						temp_d.publicAddSection(sections.get(i), sections.get(i + 1));
 						i++;
 					}
+					total_time += System.currentTimeMillis() - a;
 //					HashMap<String, String> sections = WikipediaParser.splitSection(text);
 //					Iterator<String> iter = sections.keySet().iterator();
 //					while (iter.hasNext()) {
@@ -216,7 +221,7 @@ public class Parser {
 
 		@Override
 		public void startDocument() throws SAXException {
-			System.out.println("startDocument");
+			//System.out.println("startDocument");
 		}
 
 		@Override

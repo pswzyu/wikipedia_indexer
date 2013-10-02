@@ -25,6 +25,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import edu.buffalo.cse.ir.wikiindexer.FileUtil;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenStream;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.Tokenizer;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerException;
+import edu.buffalo.cse.ir.wikiindexer.tokenizer.TokenizerFactoryForQuery;
 
 /**
  * @author nikhillo
@@ -266,6 +270,18 @@ public class IndexReader {
 	 * number of occurrences as value. An ordering is not expected on the map
 	 */
 	public Map<String, Integer> getPostings(String key) {
+		TokenizerFactoryForQuery tfq = TokenizerFactoryForQuery.getInstance(props);
+		TokenStream stream = new TokenStream(key);
+		Tokenizer tk = tfq.getTokenizer(1);
+		try {
+			tk.tokenize(stream);
+		} catch (TokenizerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		stream.reset();
+		key = stream.next();
+		
 		HashMap<String, Integer> result = new HashMap<String, Integer>();
 		String search_key=null;
 		if (field == INDEXFIELD.TERM) // 如果是term直接查找
@@ -348,6 +364,19 @@ public class IndexReader {
 	 * first entry in the map.
 	 */
 	public Map<String, Integer> query(String... terms) {
+		TokenizerFactoryForQuery tfq = TokenizerFactoryForQuery.getInstance(props);
+		TokenStream stream = new TokenStream("");
+		stream.append(terms);
+		Tokenizer tk = tfq.getTokenizer(1);
+		try {
+			tk.tokenize(stream);
+		} catch (TokenizerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		stream.reset();
+		stream.getAllTokens().toArray(terms);
+		
 		// HashMap< DocId, IdAndOccurance<has how many kinds of term,
 		// 	all the terms occured how many time> >
 		HashMap<Integer, IdAndOccurance > temp_re = new HashMap<Integer, IdAndOccurance>();

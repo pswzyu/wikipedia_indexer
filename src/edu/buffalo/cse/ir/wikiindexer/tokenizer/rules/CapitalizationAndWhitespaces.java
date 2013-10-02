@@ -25,12 +25,14 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 			int last_cut_point = -1;
 			boolean last_word_cap = false;
 			boolean first_word = true;
+			boolean punct_this = false;
+			boolean punct_last = false;
 			stream.previous(); // 回到前一个元素， 这样在后边for里面add的时候是正好添加到前面了
 			// 循环遍历每一个字符
 			for (int step = 0; step != token.length()-1; ++ step)
 			{
-				if (isPunctuation(token.charAt(step))) // 如果出现标点，刷新这个flag
-					last_word_cap = false;
+				if ( !Character.isLetter(token.charAt(step)) && !inArray(token.charAt(step)) ) // 如果出现标点，刷新这个flag
+					punct_this = true;
 				if ( inArray(token.charAt(step)) ) // 如果这个是空格， 后边的不是空格
 				{
 					char next = token.charAt(step+1);
@@ -39,7 +41,7 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 						String trimmed = trimWord( token.substring(last_cut_point+1, step),
 								first_word);
 						boolean this_cap = checkCamel(  trimmed );
-						if (this_cap && last_word_cap)
+						if (this_cap && last_word_cap && !punct_last)
 						{
 							stream.add(" "+trimmed);
 							stream.mwpHumanUse();
@@ -47,6 +49,8 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 						{
 							stream.add(trimmed);
 						}
+						punct_last = punct_this;
+						punct_this = false;
 						last_word_cap = this_cap;
 						last_cut_point = step;
 						if (first_word) // 看看是不是句首
@@ -58,8 +62,8 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 			String trimmed = trimWord( token.substring(last_cut_point+1, token.length()),
 					first_word);
 			boolean this_cap = checkCamel(  trimmed );
-			stream.add(trimmed);
-			if (this_cap && last_word_cap)
+			stream.add(" "+trimmed);
+			if (this_cap && last_word_cap && !punct_last)
 				stream.mwpHumanUse();
 			// \for
 			stream.remove();
@@ -106,7 +110,7 @@ public class CapitalizationAndWhitespaces implements TokenizerRule {
 	}
 	public boolean isPunctuation(char ch)
 	{
-		if (ch == ',' || ch == '.' || ch == '!' || ch == '?')
+		if (ch == ',' || ch == '.' || ch == '!' || ch == '?' || ch == ';')
 			return true;
 		else
 			return false;

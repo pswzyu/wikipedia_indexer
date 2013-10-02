@@ -37,14 +37,14 @@ public class PlayWithIndexReader {
 		
 		Properties prop =  Runner.loadProperties("./files/properties.config");
 		//IndexReader author = new IndexReader(prop, INDEXFIELD.AUTHOR);
-		IndexReader category = new IndexReader(prop, INDEXFIELD.CATEGORY);
+		//IndexReader category = new IndexReader(prop, INDEXFIELD.CATEGORY);
 		//IndexReader link = new IndexReader(prop, INDEXFIELD.LINK);
-		//IndexReader term = new IndexReader(prop, INDEXFIELD.TERM);
+		IndexReader term = new IndexReader(prop, INDEXFIELD.TERM);
 
 		//test(author);
-		test(category);
+		//test(category);
 		//test(link);
-		//test(term);
+		test(term);
 	}
 	public static void test(IndexReader ir)
 	{
@@ -53,7 +53,7 @@ public class PlayWithIndexReader {
 		System.out.println(ir.getTotalValueTerms());
 		printMap(ir.getPostings("videos"));
 		System.out.println("-------------");
-		printMap(ir.query("YouTube", "videos"));
+		printMap(ir.query("You'Tube", "Videos"));
 		System.out.println("-------------");
 		printColl(ir.getTopK(10));
 		
