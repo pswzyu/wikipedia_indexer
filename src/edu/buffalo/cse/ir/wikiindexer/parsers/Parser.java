@@ -36,8 +36,6 @@ public class Parser {
 	/* */
 	private final Properties props;
 	
-	public static int total_time = 0;
-	
 	/**
 	 * 
 	 * @param idxConfig
@@ -184,8 +182,6 @@ public class Parser {
 					text = WikipediaParser.parseTagFormatting(text);
 					text = WikipediaParser.parseTemplates(text);
 					
-					
-					long a = System.currentTimeMillis();
 					temp_d.publicAddCategories(WikipediaParser.parseCategories(text));
 					// 解析链接并将得到的链接加入到link字段中
 					String[] links = WikipediaParser.parseLinks(text);
@@ -201,7 +197,6 @@ public class Parser {
 						temp_d.publicAddSection(sections.get(i), sections.get(i + 1));
 						i++;
 					}
-					total_time += System.currentTimeMillis() - a;
 //					HashMap<String, String> sections = WikipediaParser.splitSection(text);
 //					Iterator<String> iter = sections.keySet().iterator();
 //					while (iter.hasNext()) {

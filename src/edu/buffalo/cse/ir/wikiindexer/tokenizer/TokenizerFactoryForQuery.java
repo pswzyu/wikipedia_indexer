@@ -57,35 +57,54 @@ public class TokenizerFactoryForQuery {
 	 * @param field: The field for which to instantiate tokenizer
 	 * @return The fully initialized tokenizer
 	 */
-	public Tokenizer getTokenizer(int type) {
-		// query
-		if (type == 0)
+	public Tokenizer getTokenizer(int type, INDEXFIELD field) {
+		if (field == INDEXFIELD.TERM)
 		{
 			try {
-				// 分句，大小写，空白，apostrophe， hyphen， special char，dates，num，accent
-				// delim， stem， stopword
-				return new Tokenizer(new CapitalizationDefault(), new WhitespaceDefault(),
-						new ApostropheDefault(), new HyphenDefault(),new SpecialCharsDefault(),
-						new AccentsDefault(), new DelimDefault(), new EnglishStemmer(),
-						new StopwordsDefault());
+				// 
+				if (type == 0)
+				{
+					return new Tokenizer(new CapitalizationDefault(), new WhitespaceDefault(),
+							new ApostropheDefault(), new HyphenDefault(),new SpecialCharsDefault(),
+							new AccentsDefault(), new DelimDefault(), new EnglishStemmer(),
+							new StopwordsDefault());
+				}
+				else if (type == 1)
+				{
+					return new Tokenizer(new CapitalizationDefault(), new ApostropheDefault(),
+							new HyphenDefault(),new SpecialCharsDefault(),
+							new AccentsDefault(), new DelimDefault(), new EnglishStemmer(),
+							new StopwordsDefault());
+				}
 			} catch (TokenizerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else if (type == 1) // getpostinglist
+		}else if (field == INDEXFIELD.AUTHOR)
 		{
 			try {
-				return new Tokenizer(new CapitalizationDefault(), new ApostropheDefault(),
-						new HyphenDefault(),new SpecialCharsDefault(),
-						new AccentsDefault(), new DelimDefault(), new EnglishStemmer(),
-						new StopwordsDefault());
+				return new Tokenizer(new WhitespaceDefault(), new CapitalizationDefault());
 			} catch (TokenizerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else
+		}
+		else if (field == INDEXFIELD.CATEGORY)
 		{
-			
+			try {
+				return new Tokenizer(new WhitespaceDefault(), new CapitalizationDefault());
+			} catch (TokenizerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else // LINK
+		{
+			try {
+				return new Tokenizer(new PunctuationDefault());
+			} catch (TokenizerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

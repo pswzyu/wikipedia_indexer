@@ -272,7 +272,7 @@ public class IndexReader {
 	public Map<String, Integer> getPostings(String key) {
 		TokenizerFactoryForQuery tfq = TokenizerFactoryForQuery.getInstance(props);
 		TokenStream stream = new TokenStream(key);
-		Tokenizer tk = tfq.getTokenizer(1);
+		Tokenizer tk = tfq.getTokenizer(1, field);
 		try {
 			tk.tokenize(stream);
 		} catch (TokenizerException e) {
@@ -367,7 +367,7 @@ public class IndexReader {
 		TokenizerFactoryForQuery tfq = TokenizerFactoryForQuery.getInstance(props);
 		TokenStream stream = new TokenStream("");
 		stream.append(terms);
-		Tokenizer tk = tfq.getTokenizer(1);
+		Tokenizer tk = tfq.getTokenizer(1, field);
 		try {
 			tk.tokenize(stream);
 		} catch (TokenizerException e) {
